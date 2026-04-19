@@ -419,15 +419,46 @@ let bStep = 1;
 // This is the ONLY correct way to read UTF-8 XML
 // from PizZip in a browser environment
 // ═══════════════════════════════════════════════
-// JSZip 3.x нативно поддерживает UTF-8 через .async('string')
-// Полностью заменяем PizZip на JSZip для чтения XML файлов
+// ═══════════════════════════════════════════════
+// PURE JS ZIP READER — без внешних библиотек
+// .docx это ZIP. Читаем напрямую через браузерный
+// DecompressionStream. Гарантированный UTF-8.
+// ═══════════════════════════════════════════════
+async function parseDocxFiles(ab) {
+  const bytes = new Uint8Array(ab);
+  const result = {};
+  let i = 0;
+  while (i < bytes.length - 30) {
+    // ZIP local file header signature: PK\x03\x04
+    if (bytes[i]===0x50 && bytes[i+1]===0x4B && bytes[i+2]===0x03 && bytes[i+3]===0x04) {
+      const method   = bytes[i+8]  | (bytes[i+9]  << 8);
+      const csize    = bytes[i+18] | (bytes[i+19]<<8) | (bytes[i+20]<<16) | (bytes[i+21]<<24);
+      const fnLen    = bytes[i+26] | (bytes[i+27] << 8);
+      const exLen    = bytes[i+28] | (bytes[i+29] << 8);
+      const fname    = new TextDecoder().decode(bytes.slice(i+30, i+30+fnLen));
+      const dataStart= i + 30 + fnLen + exLen;
+      result[fname]  = { method, data: bytes.slice(dataStart, dataStart + csize) };
+      i = dataStart + csize;
+    } else { i++; }
+  }
+  return result;
+}
+
+async function inflateRaw(data) {
+  const ds = new DecompressionStream('deflate-raw');
+  const w  = ds.writable.getWriter();
+  w.write(data); w.close();
+  return new Uint8Array(await new Response(ds.readable).arrayBuffer());
+}
+
 async function readDocxXml(ab) {
-  const zip = await JSZip.loadAsync(ab);
+  const files = await parseDocxFiles(ab);
   let xml = '';
   for (const f of ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml']) {
-    if (zip.files[f] && !zip.files[f].dir) {
-      xml += await zip.files[f].async('string');
-    }
+    if (!files[f]) continue;
+    const {method, data} = files[f];
+    const raw = method === 8 ? await inflateRaw(data) : data;
+    xml += new TextDecoder('utf-8').decode(raw);
   }
   return xml;
 }
@@ -951,20 +982,31 @@ function copySql(){
 async function genDocx(tmpl,data){
   try{
     const ab=b642ab(tmpl.b64);
-    // JSZip 3.x: правильная UTF-8 поддержка, async API
-    const zip=await JSZip.loadAsync(ab);
-    const fileNames=Object.keys(zip.files).filter(f=>
-      f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]')&&!zip.files[f].dir
-    );
-    for(const fn of fileNames){
-      let xml=await zip.files[fn].async('string');
-      xml=fixSplits(xml);
-      for(const[k,v] of Object.entries(data)){
-        xml=xml.split(`{{${k}}}`).join(escX(String(v||'')));
-      }
-      zip.file(fn, xml);
+    // Читаем шаблон чистым JS (без библиотек)
+    const srcFiles = await parseDocxFiles(ab);
+    // Строим новый ZIP через JSZip
+    const outZip = new JSZip();
+    // Сначала копируем все файлы из оригинала
+    for(const [fname, entry] of Object.entries(srcFiles)){
+      const {method, data} = entry;
+      const raw = method === 8 ? await inflateRaw(data) : data;
+      outZip.file(fname, raw);
     }
-    return await zip.generateAsync({
+    // Теперь заменяем метки в XML-файлах
+    const xmlFiles = Object.keys(srcFiles).filter(f=>
+      f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]')
+    );
+    for(const fn of xmlFiles){
+      const {method, data: fdata} = srcFiles[fn];
+      const raw = method === 8 ? await inflateRaw(fdata) : fdata;
+      let xml = new TextDecoder('utf-8').decode(raw);
+      xml = fixSplits(xml);
+      for(const[k,v] of Object.entries(data)){
+        xml = xml.split('{{'+k+'}}').join(escX(String(v||'')));
+      }
+      outZip.file(fn, new TextEncoder().encode(xml));
+    }
+    return await outZip.generateAsync({
       type:'blob',
       mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     });
