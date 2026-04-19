@@ -419,13 +419,17 @@ let bStep = 1;
 // This is the ONLY correct way to read UTF-8 XML
 // from PizZip in a browser environment
 // ═══════════════════════════════════════════════
-function pizzipReadUtf8(zipFile) {
-  const binary = zipFile.asBinary();
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i) & 0xFF;
+// JSZip 3.x нативно поддерживает UTF-8 через .async('string')
+// Полностью заменяем PizZip на JSZip для чтения XML файлов
+async function readDocxXml(ab) {
+  const zip = await JSZip.loadAsync(ab);
+  let xml = '';
+  for (const f of ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml']) {
+    if (zip.files[f] && !zip.files[f].dir) {
+      xml += await zip.files[f].async('string');
+    }
   }
-  return new TextDecoder('utf-8').decode(bytes);
+  return xml;
 }
 
 // ═══════════════════════════════════════════════
@@ -565,9 +569,9 @@ function handleUF(file) {
   if (!file.name.endsWith('.docx')){alert('Нужен файл .docx');return;}
   if(!document.getElementById('u-name').value) document.getElementById('u-name').value=file.name.replace(/\.docx$/i,'');
   const r=new FileReader();
-  r.onload=e=>{
+  r.onload=async e=>{
     pendingAB=e.target.result;
-    const found=detectPH(pendingAB);
+    const found=await detectPH(pendingAB);
     const okEl=document.getElementById('u-ok');
     okEl.style.display='block';
     okEl.textContent=`✅ Файл «${file.name}» загружен. Меток: ${found.length}`;
@@ -588,7 +592,7 @@ async function saveTmpl() {
   const type=document.getElementById('u-type').value;
   if(!name){alert('Введите название');return;}
   if(!pendingAB){alert('Загрузите файл .docx');return;}
-  const ph=detectPH(pendingAB);
+  const ph=await detectPH(pendingAB);
   const b64=ab2b64(pendingAB);
   const btn=document.getElementById('u-save-btn');
   btn.innerHTML='<span class="spinner"></span> Сохранение...'; btn.disabled=true;
@@ -651,7 +655,7 @@ async function createSingle(){
   if(idx==='')return;
   const tmpl=T[idx];
   const data=collectForm(tmpl.placeholders,'cf-');
-  const blob=genDocx(tmpl,data);
+  const blob=await genDocx(tmpl,data);
   if(!blob)return;
   const fn=makeFilename(tmpl.type,data['ФИО']);
   saveAs(blob,fn);
@@ -808,7 +812,7 @@ async function bGenerate(){
         else{let v=mp.fixed||'';if(k==='НОМЕР_ПРИКАЗА'||k==='НОМЕР_ДОГОВОРА')v=String(localOrder);if(k==='ДАТА'&&!v)v=new Date().toLocaleDateString('ru-RU');data[k]=v;}
       }
       if((tmpl.placeholders||[]).some(k=>k==='НОМЕР_ПРИКАЗА'||k==='НОМЕР_ДОГОВОРА'))localOrder++;
-      const blob=genDocx(tmpl,data);
+      const blob=await genDocx(tmpl,data);
       if(blob){
         const fn=makeFilename(tmpl.type,data['ФИО']||fio);
         const ab=await blob.arrayBuffer();zip.file(`${folder}/${fn}`,ab);
@@ -944,40 +948,40 @@ function copySql(){
 // ═══════════════════════════════════════════════
 // DOCX GENERATION CORE
 // ═══════════════════════════════════════════════
-function genDocx(tmpl,data){
+async function genDocx(tmpl,data){
   try{
     const ab=b642ab(tmpl.b64);
-    const zip=new PizZip(ab);
-    const files=Object.keys(zip.files).filter(f=>f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]'));
-    for(const fn of files){
-      // ★ FIX: asBinary() → Uint8Array → TextDecoder('utf-8')
-      // PizZip's asText() uses Latin-1, breaking Cyrillic placeholders
-      let xml=pizzipReadUtf8(zip.files[fn]);
+    // JSZip 3.x: правильная UTF-8 поддержка, async API
+    const zip=await JSZip.loadAsync(ab);
+    const fileNames=Object.keys(zip.files).filter(f=>
+      f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]')&&!zip.files[f].dir
+    );
+    for(const fn of fileNames){
+      let xml=await zip.files[fn].async('string');
       xml=fixSplits(xml);
       for(const[k,v] of Object.entries(data)){
         xml=xml.split(`{{${k}}}`).join(escX(String(v||'')));
       }
-      // Write back as UTF-8 bytes
-      const enc=new TextEncoder();
-      zip.file(fn,enc.encode(xml));
+      zip.file(fn, xml);
     }
-    return zip.generate({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    return await zip.generateAsync({
+      type:'blob',
+      mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
   }catch(err){alert('Ошибка генерации: '+err.message);console.error(err);return null;}
 }
 
 // ═══════════════════════════════════════════════
 // PLACEHOLDER DETECTION
 // ═══════════════════════════════════════════════
-function detectPH(ab){
+async function detectPH(ab){
   try{
-    const z=new PizZip(ab);
-    let xml='';
-    for(const f of['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml']){
-      if(z.files[f]) xml+=pizzipReadUtf8(z.files[f]);
-    }
+    // JSZip нативно читает UTF-8 — кириллика в метках работает корректно
+    let xml = await readDocxXml(ab);
     xml=fixSplits(xml);
-    // Match anything between {{ }} — works for any language
-    return[...new Set([...xml.matchAll(/\{\{([^}]{1,60})\}\}/g)].map(m=>m[1].trim()).filter(Boolean))];
+    const found=[...new Set([...xml.matchAll(/\{\{([^}]{1,60})\}\}/g)].map(m=>m[1].trim()).filter(Boolean))];
+    console.log('detectPH found:', found, 'xml snippet:', xml.substring(0,500));
+    return found;
   }catch(e){console.error('detectPH error:',e);return[];}
 }
 
