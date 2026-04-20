@@ -12,35 +12,36 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#EEF1F8;--surf:#fff;--p:#1A56DB;--pd:#1245B5;--pl:#EBF0FF;
-  --acc:#7C3AED;--txt:#18181B;--mut:#6B7280;
-  --brd:#E4E7EC;--ok:#16A34A;--okb:#F0FDF4;--okbrd:#BBF7D0;
+  --bg:#F0F2F7;--surf:#fff;--p:#14387F;--pd:#0F2B63;--pl:#E8EEF9;
+  --acc:#1a6b3c;--txt:#1A1D23;--mut:#64748B;
+  --brd:#DDE2EC;--ok:#16A34A;--okb:#F0FDF4;--okbrd:#BBF7D0;
   --er:#DC2626;--erb:#FFF1F1;--warn:#D97706;--warnb:#FFFBEB;--warnbrd:#FDE68A;
-  --r:10px;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
+  --r:10px;--sh:0 1px 2px rgba(0,0,0,.05),0 3px 12px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;}
-.hdr{background:var(--p);display:flex;align-items:center;padding:0 24px;height:56px;gap:16px;box-shadow:0 2px 12px rgba(26,86,219,.3);position:sticky;top:0;z-index:100;}
-.logo{color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;gap:7px;}
-.logo small{opacity:.6;font-weight:400;font-size:12px;}
-.db-indicator{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;}
-.db-ok{background:rgba(22,163,74,.25);color:#86efac;}
-.db-err{background:rgba(220,38,38,.25);color:#fca5a5;}
-.hdr-nav{display:flex;gap:2px;margin-left:auto;}
-.nb{background:none;border:none;color:rgba(255,255,255,.75);padding:7px 14px;border-radius:7px;cursor:pointer;font:500 13px 'Rubik',sans-serif;display:flex;align-items:center;gap:6px;transition:all .15s;}
-.nb:hover{background:rgba(255,255,255,.12);color:#fff;}
-.nb.act{background:rgba(255,255,255,.2);color:#fff;}
-.wrap{max-width:1100px;margin:0 auto;padding:28px 20px;}
+.hdr{background:var(--p);display:flex;align-items:center;padding:0 28px;height:60px;gap:20px;box-shadow:0 2px 16px rgba(20,56,127,.35);position:sticky;top:0;z-index:100;}
+.logo{color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;letter-spacing:-.2px;white-space:nowrap;}
+.logo-icon{width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-sub{opacity:.55;font-weight:400;font-size:11.5px;margin-left:4px;}
+.db-indicator{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:99px;font-size:11.5px;font-weight:600;cursor:pointer;}
+.db-ok{background:rgba(22,163,74,.22);color:#86efac;}
+.db-err{background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);}
+.hdr-nav{display:flex;gap:1px;margin-left:auto;}
+.nb{background:none;border:none;color:rgba(255,255,255,.65);padding:7px 15px;border-radius:7px;cursor:pointer;font:500 13px 'Rubik',sans-serif;display:flex;align-items:center;gap:6px;transition:all .15s;letter-spacing:-.1px;}
+.nb:hover{background:rgba(255,255,255,.1);color:#fff;}
+.nb.act{background:rgba(255,255,255,.18);color:#fff;}
+.wrap{max-width:1060px;margin:0 auto;padding:28px 24px;}
 .pg{display:none;}.pg.act{display:block;animation:fi .2s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap;}
-.st{font-size:20px;font-weight:700;}
+.st{font-size:19px;font-weight:700;letter-spacing:-.3px;}
 .ss{font-size:13px;color:var(--mut);margin-top:3px;}
 .card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:22px;box-shadow:var(--sh);}
-.ct{font-size:14.5px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.ct{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--txt);display:flex;align-items:center;gap:7px;}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;border-radius:8px;font:500 13.5px 'Rubik',sans-serif;cursor:pointer;border:none;transition:all .15s;}
-.bp{background:var(--p);color:#fff;}.bp:hover{background:var(--pd);}
-.ba{background:var(--acc);color:#fff;}.ba:hover{background:#6D28D9;}
+.bp{background:var(--p);color:#fff;box-shadow:0 1px 3px rgba(20,56,127,.3);}.bp:hover{background:var(--pd);}
+.ba{background:var(--acc);color:#fff;box-shadow:0 1px 3px rgba(26,107,60,.3);}.ba:hover{background:#145c32;}
 .bg2{background:transparent;color:var(--mut);border:1px solid var(--brd);}.bg2:hover{background:var(--bg);color:var(--txt);}
 .bsm{padding:6px 12px;font-size:12.5px;}
 .bdk{background:#F1F5F9;color:var(--txt);}.bdk:hover{background:#E2E8F0;}
@@ -71,16 +72,16 @@ body{font-family:'Rubik',sans-serif;background:var(--bg);color:var(--txt);min-he
 .bv{background:#EDE9FE;color:#6D28D9;}.bgg{background:#DCFCE7;color:#166534;}
 .bss{background:#E0F2FE;color:#0369A1;}.br{background:#FFE4E6;color:#9F1239;}
 .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
-.chip{background:var(--pl);color:var(--p);padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;font-family:monospace;}
-.uz{border:2px dashed #CBD5E1;border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;}
+.chip{background:var(--pl);color:var(--p);padding:3px 10px;border-radius:6px;font-size:11.5px;font-weight:600;font-family:monospace;border:1px solid rgba(20,56,127,.12);}
+.uz{border:2px dashed #C8D3E8;border-radius:10px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;background:#FAFBFE;}
 .uz:hover,.uz.dg{border-color:var(--p);background:var(--pl);}
 .uz .ui{font-size:32px;margin-bottom:8px;}
 .uz .ut{font-size:13px;color:var(--mut);line-height:1.6;}
 .uz .ut b{color:var(--p);}
 .tw{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
 table{width:100%;border-collapse:collapse;}
-thead th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;background:#F9FAFB;border-bottom:1px solid var(--brd);text-align:left;}
-tbody td{padding:12px 14px;font-size:13.5px;border-bottom:1px solid #F3F4F6;vertical-align:middle;}
+thead th{padding:10px 16px;font-size:10.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;background:#F7F9FC;border-bottom:1px solid var(--brd);text-align:left;}
+tbody td{padding:13px 16px;font-size:13.5px;border-bottom:1px solid #F3F4F6;vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:#FAFBFF;}
 .emp{text-align:center;padding:56px 20px;color:var(--mut);}
@@ -95,10 +96,10 @@ tbody tr:hover td{background:#FAFBFF;}
 .tab:hover{color:var(--txt);}
 .tab.act{color:var(--p);border-bottom-color:var(--p);}
 .steps{display:flex;gap:0;margin-bottom:22px;border:1px solid var(--brd);border-radius:8px;overflow:hidden;}
-.step{flex:1;padding:9px 12px;font-size:12px;font-weight:600;text-align:center;background:#F9FAFB;color:var(--mut);border-right:1px solid var(--brd);}
+.step{flex:1;padding:10px 12px;font-size:12px;font-weight:600;text-align:center;background:#F7F9FC;color:var(--mut);border-right:1px solid var(--brd);letter-spacing:.1px;}
 .step:last-child{border-right:none;}
 .step.done{background:var(--pl);color:var(--p);}
-.step.cur{background:var(--p);color:#fff;}
+.step.cur{background:var(--p);color:#fff;box-shadow:inset 0 -2px 0 rgba(0,0,0,.1);}
 .prog-bar{height:8px;background:#E2E8F0;border-radius:99px;overflow:hidden;margin:12px 0;}
 .prog-fill{height:100%;background:var(--p);border-radius:99px;transition:width .3s ease;}
 .maptbl{width:100%;border-collapse:collapse;font-size:13px;}
@@ -115,7 +116,7 @@ tbody tr:hover td{background:#FAFBFF;}
 hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
 .stat{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:18px;box-shadow:var(--sh);text-align:center;}
-.stat-n{font-size:28px;font-weight:800;color:var(--p);}
+.stat-n{font-size:26px;font-weight:800;color:var(--p);}
 .stat-l{font-size:12px;color:var(--mut);margin-top:4px;}
 .code-block{background:#1E293B;color:#E2E8F0;padding:16px;border-radius:8px;font-family:monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;white-space:pre;}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
@@ -127,9 +128,9 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 <body>
 
 <header class="hdr">
-  <div class="logo">📋 ДокГен ИДО <small>Pro</small></div>
+  <div class="logo"><div class="logo-icon">📋</div>ДокГен ИДО<span class="logo-sub">Институт доп. образования</span></div>
   <div class="db-indicator db-err" id="db-indicator" onclick="goPage('settings',document.querySelectorAll('.nb')[4])">
-    <span id="db-dot">⚫</span><span id="db-txt">Supabase не подключён</span>
+    <span id="db-dot">⚫</span><span id="db-txt">База данных не подключена</span>
   </div>
   <nav class="hdr-nav">
     <button class="nb act" onclick="goPage('tmpl',this)">📁 <span class="txt">Шаблоны</span></button>
@@ -145,22 +146,29 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 <!-- ═══ ШАБЛОНЫ ═══════════════════════════════════ -->
 <section id="pg-tmpl" class="pg act">
   <div class="sh">
-    <div><div class="st">Шаблоны документов</div>
-    <div class="ss">Загрузите Word-файлы с метками {{МЕТКА}} — хранятся в Supabase, доступны всем сотрудникам</div></div>
+    <div><div class="st">Шаблоны документов</div></div>
     <button class="btn bp" onclick="openUp()">＋ Добавить шаблон</button>
   </div>
-  <div class="alert ai">💡 Замените переменные данные в Word на метки: <code>{{ФИО}}</code> <code>{{ПРОГРАММА}}</code> <code>{{ДАТА_НАЧАЛА}}</code> <code>{{НОМЕР_ПРИКАЗА}}</code> — полный список ниже.</div>
   <div id="tl" class="tl"></div>
-  <div class="card">
-    <div class="ct">📌 Справочник меток</div>
-    <div id="refgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:7px;"></div>
-  </div>
+
+  <details id="ref-details" style="margin-top:4px;">
+    <summary style="cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:10px 14px;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--mut);list-style:none;box-shadow:var(--sh);user-select:none;">
+      📌 Справочник меток для создания шаблонов
+      <span style="font-size:11px;font-weight:400;margin-left:4px;">— нажмите чтобы раскрыть</span>
+    </summary>
+    <div class="card" style="margin-top:8px;border-top-left-radius:0;">
+      <div style="font-size:12.5px;color:var(--mut);margin-bottom:14px;line-height:1.6;">
+        Вставьте нужные метки в документ Word вместо переменных данных. Используйте <b>Найти и заменить (Ctrl+H)</b> для надёжного результата.
+      </div>
+      <div id="refgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;"></div>
+    </div>
+  </details>
+
 </section>
 
 <!-- ═══ СОЗДАТЬ ════════════════════════════════════ -->
 <section id="pg-create" class="pg">
-  <div class="sh"><div><div class="st">Создать документ</div>
-  <div class="ss">Один документ — заполните поля вручную</div></div></div>
+  <div class="sh"><div><div class="st">Создать документ</div></div></div>
   <div class="card">
     <div class="fg"><label>Шаблон</label>
       <select class="fi" id="c-sel" onchange="cOnSel()"><option value="">— выберите шаблон —</option></select>
@@ -179,8 +187,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 
 <!-- ═══ ПАКЕТ ═════════════════════════════════════ -->
 <section id="pg-batch" class="pg">
-  <div class="sh"><div><div class="st">Пакетное создание из Excel</div>
-  <div class="ss">Загрузите список слушателей — система создаст все документы и упакует в ZIP</div></div></div>
+  <div class="sh"><div><div class="st">Создать документы из Excel</div></div></div>
   <div class="steps" id="batch-steps">
     <div class="step cur" id="bs-1">1. Шаблоны</div>
     <div class="step" id="bs-2">2. Excel-файл</div>
@@ -188,13 +195,12 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
     <div class="step" id="bs-4">4. Генерация</div>
   </div>
   <div id="b-s1" class="card">
-    <div class="ct">📄 Какие документы создать для каждого слушателя?</div>
+    <div class="ct">Выберите типы документов</div>
     <div id="b-tmpl-checks" style="display:flex;flex-direction:column;gap:8px;"></div>
     <div style="margin-top:18px;"><button class="btn bp" onclick="bNext(1)">Далее →</button></div>
   </div>
   <div id="b-s2" style="display:none;" class="card">
-    <div class="ct">📊 Загрузите Excel со списком слушателей</div>
-    <div class="alert ai">💡 Назовите столбцы как метки: <code>ФИО</code>, <code>ПРОГРАММА</code>, <code>ОРГАНИЗАЦИЯ</code>, <code>ДАТА_НАЧАЛА</code>, <code>ДАТА_ОКОНЧАНИЯ</code>, <code>ЧАСЫ</code>, <code>СТОИМОСТЬ</code> — тогда система сопоставит их автоматически.</div>
+    <div class="ct">Загрузите список слушателей</div>
     <div class="uz" id="b-dropz" onclick="document.getElementById('b-xlsx').click()">
       <div class="ui">📊</div><div class="ut"><b>Нажмите</b> или перетащите .xlsx / .xls</div>
     </div>
@@ -206,8 +212,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
     </div>
   </div>
   <div id="b-s3" style="display:none;" class="card">
-    <div class="ct">🔗 Сопоставление столбцов и меток</div>
-    <div class="alert ai">Для каждой метки выберите столбец из Excel или введите фиксированное значение.</div>
+    <div class="ct">Укажите соответствие столбцов</div>
     <div style="overflow-x:auto;">
       <table class="maptbl" id="map-tbl">
         <thead><tr><th>Метка</th><th>Источник</th><th>Столбец из Excel</th><th>Или фиксированное значение</th></tr></thead>
@@ -220,7 +225,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
     </div>
   </div>
   <div id="b-s4" style="display:none;" class="card">
-    <div class="ct">⚡ Генерация документов</div>
+    <div class="ct">Проверьте и скачайте</div>
     <div id="prev-info" style="margin-bottom:12px;font-size:13.5px;color:var(--mut);"></div>
     <div class="prev-wrap" id="prev-wrap"></div>
     <hr class="dv">
@@ -230,7 +235,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
     </div>
     <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <button class="btn bg2" onclick="bBack(4)">← Назад</button>
-      <button class="btn ba" id="b-genbtn" onclick="bGenerate()">⚡ Создать все документы → ZIP</button>
+      <button class="btn ba" id="b-genbtn" onclick="bGenerate()">⚡ Сформировать и скачать</button>
       <span id="b-genok" style="display:none;color:var(--ok);font-weight:600;font-size:13.5px;">✅ ZIP скачан!</span>
     </div>
   </div>
@@ -239,8 +244,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 <!-- ═══ ЖУРНАЛ ════════════════════════════════════ -->
 <section id="pg-journal" class="pg">
   <div class="sh">
-    <div><div class="st">Журнал документов</div>
-    <div class="ss">История хранится в Supabase — видна всем сотрудникам</div></div>
+    <div><div class="st">Журнал документов</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <select class="fi bsm" id="j-filt" onchange="renderJournal()" style="width:180px;font-size:13px;padding:7px 10px;"></select>
       <button class="btn bdk bsm" onclick="exportCSV()">📥 CSV</button>
@@ -249,7 +253,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
   <div class="stats" id="j-stats"></div>
   <div class="tw">
     <table>
-      <thead><tr><th>№</th><th>Дата/Время</th><th>Тип</th><th>Программа</th><th>ФИО</th><th>№ Приказа</th><th>Режим</th></tr></thead>
+      <thead><tr><th>№</th><th>Дата/Время</th><th>Тип</th><th>Программа</th><th>ФИО</th><th>№ Приказа</th></tr></thead>
       <tbody id="j-body"></tbody>
     </table>
     <div id="j-emp" class="emp"><div class="ei">📋</div><div>Документов пока нет</div></div>
@@ -258,25 +262,21 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 
 <!-- ═══ НАСТРОЙКИ ══════════════════════════════════ -->
 <section id="pg-settings" class="pg">
-  <div class="sh"><div><div class="st">Настройки</div>
-  <div class="ss">Подключение к Supabase и значения по умолчанию</div></div></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+  <div class="sh"><div><div class="st">Настройки</div></div></div>
+  <div style="display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;">
     <div>
       <div class="card" style="margin-bottom:20px;">
-        <div class="ct">🗄️ Подключение к Supabase</div>
-        <div class="fg"><label>Supabase Project URL</label>
+        <div class="ct">🗄️ Подключение к базе данных</div>
+        <div class="fg"><label>URL базы данных</label>
           <input class="fi" id="s-url" placeholder="https://xxxxxxxx.supabase.co"></div>
-        <div class="fg"><label>Anon Key (публичный ключ)</label>
+        <div class="fg"><label>Ключ доступа</label>
           <input class="fi" id="s-key" type="password" placeholder="eyJ..."></div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <button class="btn bp" onclick="connectSupabase()">🔌 Подключить</button>
+          <button class="btn bp" onclick="connectSupabase()">Подключить</button>
           <span id="s-conn-ok" style="display:none;color:var(--ok);font-weight:600;font-size:13px;">✅ Подключено!</span>
           <span id="s-conn-err" style="display:none;color:var(--er);font-weight:600;font-size:13px;"></span>
         </div>
-        <hr class="dv">
-        <div style="font-size:12.5px;color:var(--mut);line-height:1.6;">
-          Ключи хранятся только в вашем браузере (localStorage). Данные записываются в ваш Supabase-проект.
-        </div>
+
       </div>
       <div class="card">
         <div class="ct">⚙️ Значения по умолчанию</div>
@@ -284,20 +284,22 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
           <input class="fi" id="s-sign" placeholder="Директор ИДО Иванов А.А."></div>
         <div class="fg"><label>Учреждение</label>
           <input class="fi" id="s-inst" placeholder="ФГБОУ ВО «ПовГУФКСиТ», ИДО"></div>
-        <div class="fg"><label>Следующий номер приказа</label>
+        <div class="fg"><label>Текущий номер приказа</label>
           <input class="fi" id="s-ord" type="number" min="1" placeholder="1"></div>
         <button class="btn bp" onclick="saveSettings()">💾 Сохранить</button>
         <span id="s-ok" style="display:none;margin-left:12px;color:var(--ok);font-weight:600;font-size:13px;">✅ Сохранено</span>
       </div>
     </div>
     <div class="card">
-      <div class="ct">📋 SQL для создания таблиц</div>
-      <div style="font-size:13px;color:var(--mut);margin-bottom:12px;line-height:1.6;">
-        Выполните этот SQL в вашем проекте Supabase: <b>SQL Editor → New Query → вставьте → Run</b>
-      </div>
-      <div class="code-block" id="sql-block"></div>
-      <button class="btn bdk bsm" style="margin-top:12px;" onclick="copySql()">📋 Скопировать SQL</button>
-      <span id="sql-copied" style="display:none;margin-left:10px;color:var(--ok);font-size:13px;">✅ Скопировано</span>
+      <details>
+        <summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--mut);user-select:none;list-style:none;display:flex;align-items:center;gap:8px;">🛠 SQL для первичной настройки базы данных</summary>
+        <div style="margin-top:14px;">
+          <div style="font-size:13px;color:var(--mut);margin-bottom:10px;">Supabase → SQL Editor → New Query → вставьте → Run</div>
+          <div class="code-block" id="sql-block"></div>
+          <button class="btn bdk bsm" style="margin-top:12px;" onclick="copySql()">📋 Скопировать SQL</button>
+          <span id="sql-copied" style="display:none;margin-left:10px;color:var(--ok);font-size:13px;">✅ Скопировано</span>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -307,7 +309,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 <!-- MODAL: UPLOAD -->
 <div class="ov" id="ov-up">
   <div class="modal">
-    <div class="mtl">➕ Добавить шаблон</div>
+    <div class="mtl">Новый шаблон</div>
     <div class="fg"><label>Название</label><input class="fi" id="u-name" placeholder="Приказ о зачислении"></div>
     <div class="fg"><label>Тип документа</label>
       <select class="fi" id="u-type">
@@ -325,13 +327,13 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
     </div>
     <div id="u-ok" style="display:none;" class="alert aok"></div>
     <div id="u-ph" style="display:none;">
-      <div style="font-size:11.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Обнаруженные метки</div>
+      <div style="font-size:11.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Поля для заполнения</div>
       <div class="chips" id="u-chips"></div>
       <div id="u-warn" style="display:none;margin-top:8px;" class="alert aw"></div>
     </div>
     <div class="mft">
       <button class="btn bg2" onclick="closeOv('ov-up')">Отмена</button>
-      <button class="btn bp" id="u-save-btn" onclick="saveTmpl()">Сохранить в Supabase</button>
+      <button class="btn bp" id="u-save-btn" onclick="saveTmpl()">Сохранить</button>
     </div>
   </div>
 </div>
@@ -341,23 +343,47 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
 // CONSTANTS
 // ═══════════════════════════════════════════════
 const META = {
-  'ФИО':{'label':'ФИО слушателя','type':'text','ph':'Иванов Иван Иванович','full':true},
-  'ПРОГРАММА':{'label':'Название программы','type':'text','ph':'Охрана труда','full':true},
-  'ОРГАНИЗАЦИЯ':{'label':'Организация слушателя','type':'text','ph':'ООО «Ромашка»','full':true},
-  'ОСНОВАНИЕ':{'label':'Основание','type':'text','ph':'Договор № 45 от 10.01.2025','full':true},
-  'ДАТА_НАЧАЛА':{'label':'Дата начала','type':'date'},
-  'ДАТА_ОКОНЧАНИЯ':{'label':'Дата окончания','type':'date'},
-  'ДАТА':{'label':'Дата документа','type':'date','auto':true},
-  'ЧАСЫ':{'label':'Кол-во часов','type':'number','ph':'72'},
-  'КОЛ_ВО':{'label':'Кол-во слушателей','type':'number','ph':'15'},
-  'СТОИМОСТЬ':{'label':'Стоимость (руб.)','type':'number','ph':'12000'},
-  'НОМЕР_ПРИКАЗА':{'label':'Номер приказа','type':'text','auto':true},
+  // ── Слушатель ──
+  'ФИО':           {'label':'ФИО слушателя (полностью)','type':'text','ph':'Иванов Иван Иванович','full':true},
+  'ФИО_РОД':       {'label':'ФИО слушателя (родительный падеж)','type':'text','ph':'Иванова Ивана Ивановича','full':true},
+  'ФИО_ДАТ':       {'label':'ФИО слушателя (дательный падеж)','type':'text','ph':'Иванову Ивану Ивановичу','full':true},
+  'ДОЛЖНОСТЬ':     {'label':'Должность слушателя','type':'text','ph':'Преподаватель физической культуры','full':true},
+  'ОРГАНИЗАЦИЯ':   {'label':'Организация слушателя','type':'text','ph':'МБОУ «Школа № 5»','full':true},
+  'ПАСПОРТ':       {'label':'Паспортные данные','type':'text','ph':'4520 123456 выдан УФМС...','full':true},
+  'СНИЛС':         {'label':'СНИЛС','type':'text','ph':'123-456-789 00'},
+  'ТЕЛЕФОН':       {'label':'Телефон','type':'text','ph':'+7 (999) 000-00-00'},
+  'EMAIL':         {'label':'Email','type':'text','ph':'ivanov@mail.ru'},
+  'АДРЕС':         {'label':'Адрес слушателя','type':'text','ph':'г. Казань, ул. Пушкина, д. 1','full':true},
+  // ── Программа ──
+  'ПРОГРАММА':     {'label':'Название программы / курса','type':'text','ph':'Адаптивная физическая культура','full':true},
+  'СПЕЦИАЛЬНОСТЬ': {'label':'Специальность / направление','type':'text','ph':'Физическая культура и спорт','full':true},
+  'КВАЛИФИКАЦИЯ':  {'label':'Присваиваемая квалификация','type':'text','ph':'Инструктор-методист АФК','full':true},
+  'ФОРМА':         {'label':'Форма обучения','type':'select','options':['очная','заочная','очно-заочная','дистанционная']},
+  'ВИД':           {'label':'Вид документа об обучении','type':'select','options':['удостоверение о повышении квалификации','диплом о профессиональной переподготовке','свидетельство об обучении']},
+  'УРОВЕНЬ':       {'label':'Уровень образования','type':'select','options':['высшее','среднее профессиональное','бакалавриат','магистратура']},
+  // ── Сроки и объём ──
+  'ДАТА_НАЧАЛА':   {'label':'Дата начала обучения','type':'date'},
+  'ДАТА_ОКОНЧАНИЯ':{'label':'Дата окончания обучения','type':'date'},
+  'ДАТА':          {'label':'Дата документа','type':'date','auto':true},
+  'ЧАСЫ':          {'label':'Объём программы (часов)','type':'number','ph':'72'},
+  'КОЛ_ВО':        {'label':'Количество слушателей','type':'number','ph':'15'},
+  'ГРУППА':        {'label':'Группа / поток','type':'text','ph':'Группа 1 (весна 2025)'},
+  // ── Финансы ──
+  'СТОИМОСТЬ':     {'label':'Стоимость обучения (руб.)','type':'number','ph':'12000'},
+  'СТОИМОСТЬ_ПРОПИСЬ':{'label':'Стоимость прописью','type':'text','ph':'Двенадцать тысяч рублей 00 копеек','full':true},
+  'ОПЛАТА':        {'label':'Форма оплаты','type':'select','options':['безналичный расчёт','наличными','за счёт работодателя','бюджетное финансирование']},
+  // ── Документы ──
+  'НОМЕР_ПРИКАЗА': {'label':'Номер приказа','type':'text','auto':true},
   'НОМЕР_ДОГОВОРА':{'label':'Номер договора','type':'text','auto':true},
-  'ПОДПИСАНТ':{'label':'Подписант','type':'text','ph':'Директор Смирнов А.В.'},
-  'ФОРМА':{'label':'Форма обучения','type':'select','options':['очная','заочная','очно-заочная','дистанционная']},
-  'ВИД':{'label':'Вид документа','type':'select','options':['удостоверение о повышении квалификации','диплом о проф. переподготовке','свидетельство']},
-  'ГРУППА':{'label':'Группа / поток','type':'text','ph':'Группа 1'},
-  'УЧРЕЖДЕНИЕ':{'label':'Учреждение','type':'text','ph':'ПовГУФКСиТ ИДО'},
+  'НОМЕР_ПРОТОКОЛА':{'label':'Номер протокола','type':'text','ph':'12'},
+  'ОСНОВАНИЕ':     {'label':'Основание','type':'text','ph':'Договор № 45 от 10.01.2025','full':true},
+  // ── Учреждение ──
+  'УЧРЕЖДЕНИЕ':    {'label':'Учреждение','type':'text','ph':'ФГБОУ ВО «ПовГУФКСиТ»'},
+  'ПОДРАЗДЕЛЕНИЕ': {'label':'Подразделение','type':'text','ph':'Институт дополнительного образования'},
+  'ПОДПИСАНТ':     {'label':'Подписант (ФИО)','type':'text','ph':'Нарсуков Д.Г.'},
+  'ДОЛЖНОСТЬ_ПОДП':{'label':'Должность подписанта','type':'text','ph':'Директор ИДО'},
+  'ГОРОД':         {'label':'Город','type':'text','ph':'Казань'},
+  'ГОД':           {'label':'Год','type':'text','ph':'2025'},
 };
 const TBADGE={'Приказ о зачислении':'bb','Приказ об отчислении':'bo','Служебная записка':'bv','Договор с обучающимся':'bgg','Расписание':'bss','Программа курса':'bgg','Справка':'br','Другой':'bss'};
 const SQL = `-- ДокГен ИДО: создание таблиц
@@ -415,50 +441,90 @@ let bSelTmpls = [], bRows = [], bCols = [], bMapping = {};
 let bStep = 1;
 
 // ═══════════════════════════════════════════════
-// UTF-8 FIX: asBinary() → Uint8Array → TextDecoder
-// This is the ONLY correct way to read UTF-8 XML
-// from PizZip in a browser environment
+// DOCX ZIP READER — три уровня надёжности
+// Метод 1: JSZip (если загружен)
+// Метод 2: нативный DecompressionStream (Chrome/Edge/Firefox/Safari 16+)
+// Метод 3: raw inflate полифилл (любой браузер)
 // ═══════════════════════════════════════════════
-// ═══════════════════════════════════════════════
-// PURE JS ZIP READER — без внешних библиотек
-// .docx это ZIP. Читаем напрямую через браузерный
-// DecompressionStream. Гарантированный UTF-8.
-// ═══════════════════════════════════════════════
-async function parseDocxFiles(ab) {
+
+// --- Метод 1: JSZip ---
+async function readViaJSZip(ab) {
+  if (typeof JSZip === 'undefined') throw new Error('JSZip not loaded');
+  const zip = await JSZip.loadAsync(ab);
+  let xml = '';
+  for (const f of ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml']) {
+    if (zip.files[f] && !zip.files[f].dir) xml += await zip.files[f].async('string');
+  }
+  return xml;
+}
+
+// --- Метод 2: нативный DecompressionStream ---
+async function inflateNative(data) {
+  const ds = new DecompressionStream('deflate-raw');
+  const w = ds.writable.getWriter();
+  w.write(data); w.close();
+  return new Uint8Array(await new Response(ds.readable).arrayBuffer());
+}
+
+
+// --- ZIP local file parser ---
+function parseZipLocal(ab) {
   const bytes = new Uint8Array(ab);
   const result = {};
   let i = 0;
   while (i < bytes.length - 30) {
-    // ZIP local file header signature: PK\x03\x04
-    if (bytes[i]===0x50 && bytes[i+1]===0x4B && bytes[i+2]===0x03 && bytes[i+3]===0x04) {
-      const method   = bytes[i+8]  | (bytes[i+9]  << 8);
-      const csize    = bytes[i+18] | (bytes[i+19]<<8) | (bytes[i+20]<<16) | (bytes[i+21]<<24);
-      const fnLen    = bytes[i+26] | (bytes[i+27] << 8);
-      const exLen    = bytes[i+28] | (bytes[i+29] << 8);
-      const fname    = new TextDecoder().decode(bytes.slice(i+30, i+30+fnLen));
-      const dataStart= i + 30 + fnLen + exLen;
-      result[fname]  = { method, data: bytes.slice(dataStart, dataStart + csize) };
-      i = dataStart + csize;
+    if (bytes[i]===0x50&&bytes[i+1]===0x4B&&bytes[i+2]===0x03&&bytes[i+3]===0x04) {
+      const flags  = bytes[i+6]  | (bytes[i+7]  << 8);
+      const method = bytes[i+8]  | (bytes[i+9]  << 8);
+      const csize  = bytes[i+18] | (bytes[i+19]<<8) | (bytes[i+20]<<16) | (bytes[i+21]<<24);
+      const usize  = bytes[i+22] | (bytes[i+23]<<8) | (bytes[i+24]<<16) | (bytes[i+25]<<24);
+      const fnLen  = bytes[i+26] | (bytes[i+27] << 8);
+      const exLen  = bytes[i+28] | (bytes[i+29] << 8);
+      const fname  = new TextDecoder('utf-8').decode(bytes.slice(i+30, i+30+fnLen));
+      const dStart = i + 30 + fnLen + exLen;
+      // Handle data descriptor (flag bit 3)
+      const realCsize = (flags & 8) ? usize : csize;
+      result[fname] = {method, data: bytes.slice(dStart, dStart + Math.max(0, realCsize))};
+      i = dStart + Math.max(0, realCsize);
     } else { i++; }
   }
   return result;
 }
 
-async function inflateRaw(data) {
-  const ds = new DecompressionStream('deflate-raw');
-  const w  = ds.writable.getWriter();
-  w.write(data); w.close();
-  return new Uint8Array(await new Response(ds.readable).arrayBuffer());
-}
-
+// --- Master reader: tries all methods ---
 async function readDocxXml(ab) {
-  const files = await parseDocxFiles(ab);
+  const targets = ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml'];
+
+  // Method 1: JSZip
+  try {
+    const xml = await readViaJSZip(ab);
+    if (xml.length > 100) { console.log('✅ Read via JSZip'); return xml; }
+  } catch(e) { console.warn('JSZip failed:', e.message); }
+
+  // Method 2 & 3: parse ZIP manually, then decompress
+  const files = parseZipLocal(ab);
   let xml = '';
-  for (const f of ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml']) {
+  for (const f of targets) {
     if (!files[f]) continue;
     const {method, data} = files[f];
-    const raw = method === 8 ? await inflateRaw(data) : data;
-    xml += new TextDecoder('utf-8').decode(raw);
+    if (method === 0) {
+      // Stored (no compression)
+      xml += new TextDecoder('utf-8').decode(data);
+    } else if (method === 8) {
+      // Deflate — try native first, fallback to polyfill
+      let raw;
+      try {
+        const ds = new DecompressionStream('deflate-raw');
+        const w = ds.writable.getWriter();
+        w.write(data); w.close();
+        raw = new Uint8Array(await new Response(ds.readable).arrayBuffer());
+        console.log('✅ Decompressed via DecompressionStream');
+      } catch(e) {
+        console.warn('DecompressionStream failed on this browser');
+        raw = data; // best effort
+      }
+      xml += new TextDecoder('utf-8').decode(raw);
+    }
   }
   return xml;
 }
@@ -497,12 +563,7 @@ function updateDbIndicator(ok) {
   const txt = document.getElementById('db-txt');
   el.className = 'db-indicator ' + (ok?'db-ok':'db-err');
   dot.textContent = ok ? '🟢' : '⚫';
-  txt.textContent = ok ? 'Supabase подключён' : 'Supabase не подключён';
-}
-
-function requireSb() {
-  if (!sb) { alert('Сначала подключите Supabase в Настройках'); return false; }
-  return true;
+  txt.textContent = ok ? 'База подключена' : 'База данных не подключена';
 }
 
 // ═══════════════════════════════════════════════
@@ -523,6 +584,31 @@ function goPage(name, btn) {
 // ═══════════════════════════════════════════════
 // TEMPLATES
 // ═══════════════════════════════════════════════
+function renderRefGrid() {
+  const el = document.getElementById('refgrid');
+  if (!el) return;
+  const groups = {
+    '👤 Слушатель': ['ФИО','ФИО_РОД','ФИО_ДАТ','ДОЛЖНОСТЬ','ОРГАНИЗАЦИЯ','ПАСПОРТ','СНИЛС','ТЕЛЕФОН','EMAIL','АДРЕС'],
+    '📚 Программа': ['ПРОГРАММА','СПЕЦИАЛЬНОСТЬ','КВАЛИФИКАЦИЯ','ФОРМА','ВИД','УРОВЕНЬ'],
+    '📅 Сроки': ['ДАТА','ДАТА_НАЧАЛА','ДАТА_ОКОНЧАНИЯ','ЧАСЫ','КОЛ_ВО','ГРУППА'],
+    '💰 Финансы': ['СТОИМОСТЬ','СТОИМОСТЬ_ПРОПИСЬ','ОПЛАТА'],
+    '📋 Документы': ['НОМЕР_ПРИКАЗА','НОМЕР_ДОГОВОРА','НОМЕР_ПРОТОКОЛА','ОСНОВАНИЕ'],
+    '🏛 Учреждение': ['УЧРЕЖДЕНИЕ','ПОДРАЗДЕЛЕНИЕ','ПОДПИСАНТ','ДОЛЖНОСТЬ_ПОДП','ГОРОД','ГОД'],
+  };
+  let html = '';
+  for (const [grp, keys] of Object.entries(groups)) {
+    html += `<div style="grid-column:1/-1;font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-top:10px;margin-bottom:2px;padding-bottom:4px;border-bottom:1px solid var(--brd);">${grp}</div>`;
+    for (const k of keys) {
+      const m = META[k]; if (!m) continue;
+      html += `<div style="display:flex;align-items:center;gap:8px;background:#F7F9FC;border:1px solid var(--brd);border-radius:7px;padding:7px 10px;cursor:pointer;" onclick="navigator.clipboard.writeText('{{${k}}}').then(()=>{this.style.background='#EBF0FF';setTimeout(()=>this.style.background='',800)})" title="Нажмите чтобы скопировать">
+        <code style="background:var(--pl);color:var(--p);padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;">{{${k}}}</code>
+        <span style="font-size:12px;color:var(--mut);">${m.label}</span>
+      </div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
 async function loadTemplates() {
   if (!sb) return;
   const {data, error} = await sb.from('dg_templates').select('*').order('created_at', {ascending:true});
@@ -556,12 +642,7 @@ function renderTmpls() {
         </div>
       </div>`).join('');
   }
-  // Ref grid
-  document.getElementById('refgrid').innerHTML = Object.entries(META).map(([k,m])=>`
-    <div style="display:flex;align-items:center;gap:8px;background:#F9FAFB;border:1px solid var(--brd);border-radius:7px;padding:7px 11px;">
-      <code style="background:var(--pl);color:var(--p);padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;">{{${k}}}</code>
-      <span style="font-size:12.5px;color:var(--mut);">${m.label}</span>
-    </div>`).join('');
+
 }
 
 async function delT(id) {
@@ -628,7 +709,7 @@ async function saveTmpl() {
   const btn=document.getElementById('u-save-btn');
   btn.innerHTML='<span class="spinner"></span> Сохранение...'; btn.disabled=true;
   const {error}=await sb.from('dg_templates').insert({name,type,placeholders:ph,b64});
-  btn.innerHTML='Сохранить в Supabase'; btn.disabled=false;
+  btn.innerHTML='Сохранить'; btn.disabled=false;
   if(error){alert('Ошибка сохранения: '+error.message);return;}
   closeOv('ov-up');
   await loadTemplates();
@@ -867,7 +948,7 @@ async function bGenerate(){
   saveAs(zipBlob,`ДокГен_пакет_${new Date().toLocaleDateString('ru').replace(/\./g,'-')}.zip`);
   btn.disabled=false;
   document.getElementById('b-genok').style.display='inline';
-  document.getElementById('b-prog-txt').textContent=`✅ Готово! ${total} документов для ${bRows.length} слушателей.`;
+  document.getElementById('b-prog-txt').textContent=`✅ Готово — ${total} документов сформировано`;
 }
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -913,15 +994,13 @@ async function renderJournal(){
     const time=d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
     const fio=es((e.data||{})['ФИО']||(e.data||{})['ПРОГРАММА']||'—');
     const prog=es((e.data||{})['ПРОГРАММА']||'—');
-    const mb=e.mode==='batch'?'<span class="b bv">⚡ Пакет</span>':'<span class="b bb">✍️ Один</span>';
     return `<tr>
       <td style="color:var(--mut);font-size:12px;">${rows.length-i}</td>
       <td><div style="font-weight:500;">${date}</div><div style="font-size:11.5px;color:var(--mut);">${time}</div></td>
       <td><span class="b ${TBADGE[e.type]||'bss'}">${es(e.type||'')}</span></td>
-      <td style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${prog}</td>
+      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${prog}</td>
       <td>${fio}</td>
       <td style="font-family:monospace;font-size:12.5px;">${e.order_num||'—'}</td>
-      <td>${mb}</td>
     </tr>`;
   }).join('');
 }
@@ -979,37 +1058,85 @@ function copySql(){
 // ═══════════════════════════════════════════════
 // DOCX GENERATION CORE
 // ═══════════════════════════════════════════════
-async function genDocx(tmpl,data){
+async function genDocx(tmpl, data){
   try{
-    const ab=b642ab(tmpl.b64);
-    // Читаем шаблон чистым JS (без библиотек)
-    const srcFiles = await parseDocxFiles(ab);
-    // Строим новый ZIP через JSZip
-    const outZip = new JSZip();
-    // Сначала копируем все файлы из оригинала
-    for(const [fname, entry] of Object.entries(srcFiles)){
-      const {method, data} = entry;
-      const raw = method === 8 ? await inflateRaw(data) : data;
-      outZip.file(fname, raw);
-    }
-    // Теперь заменяем метки в XML-файлах
-    const xmlFiles = Object.keys(srcFiles).filter(f=>
-      f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]')
-    );
-    for(const fn of xmlFiles){
-      const {method, data: fdata} = srcFiles[fn];
-      const raw = method === 8 ? await inflateRaw(fdata) : fdata;
-      let xml = new TextDecoder('utf-8').decode(raw);
-      xml = fixSplits(xml);
-      for(const[k,v] of Object.entries(data)){
-        xml = xml.split('{{'+k+'}}').join(escX(String(v||'')));
+    const ab = b642ab(tmpl.b64);
+    const srcFiles = parseZipLocal(ab);
+
+    // Method 1: use JSZip for output (best compatibility)
+    if (typeof JSZip !== 'undefined') {
+      const zip = await JSZip.loadAsync(ab);
+      const xmlNames = Object.keys(zip.files).filter(f=>
+        f.endsWith('.xml')&&!f.includes('_rels')&&!f.includes('[Content_Types]')&&!zip.files[f].dir
+      );
+      for(const fn of xmlNames){
+        let xml = await zip.files[fn].async('string');
+        xml = fixSplits(xml);
+        for(const[k,v] of Object.entries(data)){
+          xml = xml.split('{{'+k+'}}').join(escX(String(v||'')));
+        }
+        zip.file(fn, new TextEncoder().encode(xml));
       }
-      outZip.file(fn, new TextEncoder().encode(xml));
+      return await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
     }
-    return await outZip.generateAsync({
-      type:'blob',
-      mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    });
+
+    // Fallback: rebuild ZIP manually
+    // (copy all files, patch XML ones)
+    const targets = ['word/document.xml','word/header1.xml','word/header2.xml','word/footer1.xml'];
+    const patched = {};
+    for(const fn of targets){
+      if(!srcFiles[fn]) continue;
+      const {method, data: fdata} = srcFiles[fn];
+      let raw;
+      try{
+        const ds=new DecompressionStream('deflate-raw');const w=ds.writable.getWriter();
+        w.write(fdata);w.close();
+        raw=new Uint8Array(await new Response(ds.readable).arrayBuffer());
+      }catch(e){raw=fdata;}
+      let xml=new TextDecoder('utf-8').decode(raw);
+      xml=fixSplits(xml);
+      for(const[k,v] of Object.entries(data)) xml=xml.split('{{'+k+'}}').join(escX(String(v||'')));
+      patched[fn]=new TextEncoder().encode(xml);
+    }
+    // Re-pack using simple store method (method=0) for patched files
+    const parts=[];
+    const entries=[];
+    let offset=0;
+    for(const[fname,entry] of Object.entries(srcFiles)){
+      const enc=new TextEncoder().encode(fname);
+      const fileData=patched[fname]||entry.data;
+      const method=patched[fname]?0:entry.method;
+      const header=new Uint8Array(30+enc.length);
+      const dv=new DataView(header.buffer);
+      dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(6,0,true);
+      dv.setUint16(8,method,true);dv.setUint32(14,0,true);
+      dv.setUint32(18,fileData.length,true);dv.setUint32(22,fileData.length,true);
+      dv.setUint16(26,enc.length,true);dv.setUint16(28,0,true);
+      header.set(enc,30);
+      entries.push({name:enc,offset,csize:fileData.length,usize:fileData.length,method});
+      parts.push(header,fileData);
+      offset+=header.length+fileData.length;
+    }
+    // Central directory
+    const cdParts=[];let cdSize=0;
+    for(const e of entries){
+      const cd=new Uint8Array(46+e.name.length);const dv=new DataView(cd.buffer);
+      dv.setUint32(0,0x02014b50,true);dv.setUint16(4,20,true);dv.setUint16(6,20,true);
+      dv.setUint16(8,0,true);dv.setUint16(10,e.method,true);dv.setUint32(16,0,true);
+      dv.setUint32(20,e.csize,true);dv.setUint32(24,e.usize,true);
+      dv.setUint16(28,e.name.length,true);dv.setUint16(30,0,true);dv.setUint16(32,0,true);
+      dv.setUint16(34,0,true);dv.setUint32(38,0,true);dv.setUint32(42,e.offset,true);
+      cd.set(e.name,46);cdParts.push(cd);cdSize+=cd.length;
+    }
+    const eocd=new Uint8Array(22);const edv=new DataView(eocd.buffer);
+    edv.setUint32(0,0x06054b50,true);edv.setUint16(4,0,true);edv.setUint16(6,0,true);
+    edv.setUint16(8,entries.length,true);edv.setUint16(10,entries.length,true);
+    edv.setUint32(12,cdSize,true);edv.setUint32(16,offset,true);edv.setUint16(20,0,true);
+    const all=[...parts,...cdParts,eocd];
+    const total=all.reduce((s,a)=>s+a.length,0);
+    const out=new Uint8Array(total);let pos=0;
+    for(const a of all){out.set(a,pos);pos+=a.length;}
+    return new Blob([out],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   }catch(err){alert('Ошибка генерации: '+err.message);console.error(err);return null;}
 }
 
@@ -1068,6 +1195,7 @@ bdzEl.addEventListener('dragleave',()=>bdzEl.classList.remove('dg'));
       await loadTemplates();
     }catch(e){sb=null;updateDbIndicator(false);renderTmpls();}
   }else{renderTmpls();}
+  renderRefGrid();
 })();
 </script>
 </body>
