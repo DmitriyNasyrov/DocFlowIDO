@@ -661,7 +661,6 @@ function goCreate(i) {
 // UPLOAD MODAL
 // ═══════════════════════════════════════════════
 function openUp() {
-  if (!requireSb()) return;
   pendingAB=null;
   document.getElementById('u-name').value='';
   document.getElementById('u-fi').value='';
@@ -699,7 +698,10 @@ function handleUF(file) {
 }
 
 async function saveTmpl() {
-  if (!requireSb()) return;
+  if (!requireSb()) {
+    alert('Для сохранения шаблона подключите базу данных в разделе Настройки');
+    return;
+  }
   const name=document.getElementById('u-name').value.trim();
   const type=document.getElementById('u-type').value;
   if(!name){alert('Введите название');return;}
