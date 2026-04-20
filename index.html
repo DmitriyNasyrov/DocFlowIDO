@@ -394,9 +394,17 @@ create table if not exists dg_templates (
   name text not null,
   type text not null,
   placeholders jsonb not null default '[]',
-  b64 text not null,
+  storage_path text,
+  b64 text,
   created_at timestamptz default now()
 );
+
+-- Bucket для хранения шаблонов
+insert into storage.buckets (id, name, public) values ('templates', 'templates', false)
+on conflict(id) do nothing;
+
+create policy "allow all templates" on storage.objects for all
+  using (bucket_id = 'templates') with check (bucket_id = 'templates');
 
 create table if not exists dg_journal (
   id bigint generated always as identity primary key,
@@ -611,8 +619,40 @@ function renderRefGrid() {
 
 async function loadTemplates() {
   if (!sb) return;
-  const {data, error} = await sb.from('dg_templates').select('*').order('created_at', {ascending:true});
+  // Не загружаем b64 сразу — только метаданные
+  const {data, error} = await sb.from('dg_templates')
+    .select('id, name, type, placeholders, storage_path, created_at')
+    .order('created_at', {ascending:true});
   if (!error && data) { T = data; renderTmpls(); }
+}
+
+// Загружает файл шаблона (из Storage или b64)
+async function fetchTmplFile(tmpl) {
+  if (tmpl._ab) return tmpl._ab; // кэш
+
+  if (tmpl.storage_path) {
+    const {data, error} = await sb.storage.from('templates').download(tmpl.storage_path);
+    if (error) throw new Error('Ошибка загрузки файла: ' + error.message);
+    const ab = await data.arrayBuffer();
+    tmpl._ab = ab;
+    return ab;
+  }
+
+  // Fallback: b64 из БД
+  if (tmpl.b64) {
+    const ab = b642ab(tmpl.b64);
+    tmpl._ab = ab;
+    return ab;
+  }
+
+  // Загрузить b64 отдельным запросом (старые записи)
+  const {data} = await sb.from('dg_templates').select('b64').eq('id', tmpl.id).single();
+  if (data?.b64) {
+    const ab = b642ab(data.b64);
+    tmpl._ab = ab;
+    return ab;
+  }
+  throw new Error('Файл шаблона не найден');
 }
 
 function renderTmpls() {
@@ -706,15 +746,45 @@ async function saveTmpl() {
   const type=document.getElementById('u-type').value;
   if(!name){alert('Введите название');return;}
   if(!pendingAB){alert('Загрузите файл .docx');return;}
-  const ph=await detectPH(pendingAB);
-  const b64=ab2b64(pendingAB);
+
   const btn=document.getElementById('u-save-btn');
   btn.innerHTML='<span class="spinner"></span> Сохранение...'; btn.disabled=true;
-  const {error}=await sb.from('dg_templates').insert({name,type,placeholders:ph,b64});
-  btn.innerHTML='Сохранить'; btn.disabled=false;
-  if(error){alert('Ошибка сохранения: '+error.message);return;}
-  closeOv('ov-up');
-  await loadTemplates();
+
+  try {
+    const ph = await detectPH(pendingAB);
+
+    // Пробуем загрузить в Supabase Storage
+    let storagePath = null;
+    const fileName = `${Date.now()}_${name.replace(/[^a-zA-ZА-яЁё0-9]/g,'_')}.docx`;
+    const fileBlob = new Blob([pendingAB], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+
+    const {data: upData, error: upErr} = await sb.storage
+      .from('templates')
+      .upload(fileName, fileBlob, {upsert: true});
+
+    if (!upErr && upData) {
+      storagePath = upData.path;
+      // Сохраняем только метаданные
+      const {error: dbErr} = await sb.from('dg_templates')
+        .insert({name, type, placeholders: ph, storage_path: storagePath});
+      if (dbErr) throw new Error('DB: ' + dbErr.message);
+    } else {
+      // Storage недоступен — сохраняем b64 напрямую (fallback)
+      console.warn('Storage недоступен, сохраняем b64:', upErr?.message);
+      const b64 = ab2b64(pendingAB);
+      const {error: dbErr} = await sb.from('dg_templates')
+        .insert({name, type, placeholders: ph, b64});
+      if (dbErr) throw new Error('DB: ' + dbErr.message);
+    }
+
+    closeOv('ov-up');
+    await loadTemplates();
+  } catch(e) {
+    alert('Ошибка сохранения: ' + e.message);
+    console.error(e);
+  } finally {
+    btn.innerHTML='Сохранить'; btn.disabled=false;
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -769,7 +839,13 @@ async function createSingle(){
   if(idx==='')return;
   const tmpl=T[idx];
   const data=collectForm(tmpl.placeholders,'cf-');
-  const blob=await genDocx(tmpl,data);
+  const btn=document.getElementById('c-btn');
+  btn.innerHTML='<span class="spinner"></span>'; btn.disabled=true;
+  let blob;
+  try {
+    const ab = await fetchTmplFile(tmpl);
+    blob = await genDocx({...tmpl, _ab: ab}, data);
+  } catch(e) { alert(e.message); btn.innerHTML='⬇ Скачать документ'; btn.disabled=false; return; }
   if(!blob)return;
   const fn=makeFilename(tmpl.type,data['ФИО']);
   saveAs(blob,fn);
@@ -780,9 +856,8 @@ async function createSingle(){
     await sb.from('dg_settings').update({order_num:newOrd}).eq('id',1);
     settings.order_num=newOrd;
   }
-  const btn=document.getElementById('c-btn');
-  const orig=btn.innerHTML;btn.innerHTML='✅ Скачан!';btn.style.background='var(--ok)';
-  setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';},2200);
+  btn.innerHTML='✅ Скачан!';btn.style.background='var(--ok)';btn.disabled=false;
+  setTimeout(()=>{btn.innerHTML='⬇ Скачать документ';btn.style.background='';},2200);
 }
 
 function collectForm(keys,pfx){
@@ -926,7 +1001,8 @@ async function bGenerate(){
         else{let v=mp.fixed||'';if(k==='НОМЕР_ПРИКАЗА'||k==='НОМЕР_ДОГОВОРА')v=String(localOrder);if(k==='ДАТА'&&!v)v=new Date().toLocaleDateString('ru-RU');data[k]=v;}
       }
       if((tmpl.placeholders||[]).some(k=>k==='НОМЕР_ПРИКАЗА'||k==='НОМЕР_ДОГОВОРА'))localOrder++;
-      const blob=await genDocx(tmpl,data);
+      const fileAb = await fetchTmplFile(tmpl);
+      const blob=await genDocx({...tmpl, _ab: fileAb}, data);
       if(blob){
         const fn=makeFilename(tmpl.type,data['ФИО']||fio);
         const ab=await blob.arrayBuffer();zip.file(`${folder}/${fn}`,ab);
@@ -1062,7 +1138,7 @@ function copySql(){
 // ═══════════════════════════════════════════════
 async function genDocx(tmpl, data){
   try{
-    const ab = b642ab(tmpl.b64);
+    const ab = tmpl._ab || b642ab(tmpl.b64 || '');
     const srcFiles = parseZipLocal(ab);
 
     // Method 1: use JSZip for output (best compatibility)
