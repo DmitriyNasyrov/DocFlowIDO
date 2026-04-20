@@ -574,6 +574,11 @@ function updateDbIndicator(ok) {
   txt.textContent = ok ? 'База подключена' : 'База данных не подключена';
 }
 
+function requireSb() {
+  if (!sb) { alert('Подключите базу данных в разделе Настройки'); return false; }
+  return true;
+}
+
 // ═══════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════
@@ -742,48 +747,68 @@ async function saveTmpl() {
     alert('Для сохранения шаблона подключите базу данных в разделе Настройки');
     return;
   }
-  const name=document.getElementById('u-name').value.trim();
-  const type=document.getElementById('u-type').value;
-  if(!name){alert('Введите название');return;}
-  if(!pendingAB){alert('Загрузите файл .docx');return;}
+  const name = document.getElementById('u-name').value.trim();
+  const type = document.getElementById('u-type').value;
+  if (!name) { alert('Введите название'); return; }
+  if (!pendingAB) { alert('Загрузите файл .docx'); return; }
 
-  const btn=document.getElementById('u-save-btn');
-  btn.innerHTML='<span class="spinner"></span> Сохранение...'; btn.disabled=true;
+  const btn = document.getElementById('u-save-btn');
+  const errEl = document.getElementById('u-warn');
+  btn.innerHTML = '<span class="spinner"></span> Сохранение...';
+  btn.disabled = true;
+  errEl.style.display = 'none';
+
+  const showErr = (msg) => {
+    errEl.style.display = 'block';
+    errEl.textContent = '❌ ' + msg;
+    btn.innerHTML = 'Сохранить';
+    btn.disabled = false;
+  };
 
   try {
     const ph = await detectPH(pendingAB);
+    const fileName = Date.now() + '_' + name.replace(/[^\w]/g,'_') + '.docx';
+    const fileBlob = new Blob([pendingAB], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
 
-    // Пробуем загрузить в Supabase Storage
-    let storagePath = null;
-    const fileName = `${Date.now()}_${name.replace(/[^a-zA-ZА-яЁё0-9]/g,'_')}.docx`;
-    const fileBlob = new Blob([pendingAB], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-
+    // Шаг 1: загрузка файла в Storage
+    console.log('Загрузка в Storage:', fileName, fileBlob.size, 'байт');
     const {data: upData, error: upErr} = await sb.storage
       .from('templates')
       .upload(fileName, fileBlob, {upsert: true});
 
-    if (!upErr && upData) {
-      storagePath = upData.path;
-      // Сохраняем только метаданные
-      const {error: dbErr} = await sb.from('dg_templates')
-        .insert({name, type, placeholders: ph, storage_path: storagePath});
-      if (dbErr) throw new Error('DB: ' + dbErr.message);
-    } else {
-      // Storage недоступен — сохраняем b64 напрямую (fallback)
-      console.warn('Storage недоступен, сохраняем b64:', upErr?.message);
+    console.log('Storage результат:', upData, upErr);
+
+    let storagePath = null;
+    if (upErr) {
+      console.warn('Storage error:', upErr.message, upErr.statusCode);
+      // Fallback: b64 в БД
+      console.log('Переходим на b64 fallback...');
       const b64 = ab2b64(pendingAB);
-      const {error: dbErr} = await sb.from('dg_templates')
+      console.log('b64 длина:', b64.length);
+      const {data: d2, error: dbErr2} = await sb.from('dg_templates')
         .insert({name, type, placeholders: ph, b64});
-      if (dbErr) throw new Error('DB: ' + dbErr.message);
+      console.log('DB b64 результат:', d2, dbErr2);
+      if (dbErr2) { showErr('Ошибка БД: ' + dbErr2.message + ' | code: ' + dbErr2.code); return; }
+    } else {
+      storagePath = upData.path;
+      console.log('Файл в Storage:', storagePath);
+      // Шаг 2: запись метаданных в БД
+      const {data: d3, error: dbErr3} = await sb.from('dg_templates')
+        .insert({name, type, placeholders: ph, storage_path: storagePath});
+      console.log('DB storage результат:', d3, dbErr3);
+      if (dbErr3) { showErr('Ошибка БД: ' + dbErr3.message + ' | code: ' + dbErr3.code); return; }
     }
 
+    btn.innerHTML = 'Сохранить';
+    btn.disabled = false;
     closeOv('ov-up');
     await loadTemplates();
+
   } catch(e) {
-    alert('Ошибка сохранения: ' + e.message);
-    console.error(e);
-  } finally {
-    btn.innerHTML='Сохранить'; btn.disabled=false;
+    console.error('saveTmpl exception:', e);
+    showErr(e.message || String(e));
   }
 }
 
