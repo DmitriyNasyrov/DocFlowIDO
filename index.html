@@ -794,9 +794,9 @@ async function saveTmpl() {
     } else {
       storagePath = upData.path;
       console.log('Файл в Storage:', storagePath);
-      // Шаг 2: запись метаданных в БД
+      // Шаг 2: запись метаданных в БД (b64:'' для совместимости с NOT NULL)
       const {data: d3, error: dbErr3} = await sb.from('dg_templates')
-        .insert({name, type, placeholders: ph, storage_path: storagePath});
+        .insert({name, type, placeholders: ph, storage_path: storagePath, b64: ''});
       console.log('DB storage результат:', d3, dbErr3);
       if (dbErr3) { showErr('Ошибка БД: ' + dbErr3.message + ' | code: ' + dbErr3.code); return; }
     }
