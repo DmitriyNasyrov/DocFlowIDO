@@ -134,6 +134,7 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
   </div>
   <nav class="hdr-nav">
     <button class="nb act" onclick="goPage('tmpl',this)">📁 <span class="txt">Шаблоны</span></button>
+    <button class="nb" onclick="goPage('course',this)">🚀 <span class="txt">Пакет: Курс</span></button>
     <button class="nb" onclick="goPage('create',this)">✍️ <span class="txt">Создать</span></button>
     <button class="nb" onclick="goPage('batch',this)">⚡ <span class="txt">Из Excel</span></button>
     <button class="nb" onclick="goPage('journal',this)">📋 <span class="txt">Журнал</span></button>
@@ -304,6 +305,161 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
   </div>
 </section>
 
+
+<!-- ═══ ПАКЕТ: КУРС ════════════════════════════ -->
+<section id="pg-course" class="pg">
+  <div class="sh">
+    <div>
+      <div class="st">Пакетное создание: весь курс</div>
+      <div class="ss">Введите данные один раз — система создаст все документы сразу и упакует в ZIP</div>
+    </div>
+    <div id="course-order-pill" style="display:none;"></div>
+  </div>
+
+  <!-- ПРОГРЕСС ШАГОВ -->
+  <div class="steps" style="margin-bottom:22px;">
+    <div class="step cur" id="cs-1">1. Данные курса</div>
+    <div class="step" id="cs-2">2. Слушатели</div>
+    <div class="step" id="cs-3">3. Специалисты</div>
+    <div class="step" id="cs-4">4. Документы</div>
+    <div class="step" id="cs-5">5. Генерация</div>
+  </div>
+
+  <!-- ШАГ 1: ДАННЫЕ КУРСА -->
+  <div id="cs-block-1" class="card">
+    <div class="ct">📚 Основные данные курса</div>
+    <div class="grid2">
+      <div class="fg colfull"><label>Название программы</label>
+        <input class="fi" id="cp-prog" value="Физическая культура для лиц с отклонениями в состоянии здоровья (Адаптивная физическая культура)"></div>
+      <div class="fg"><label>Дата начала</label>
+        <input class="fi" type="date" id="cp-start"></div>
+      <div class="fg"><label>Дата окончания</label>
+        <input class="fi" type="date" id="cp-end"></div>
+      <div class="fg"><label>Объём (часов)</label>
+        <input class="fi" type="number" id="cp-hours" value="272"></div>
+      <div class="fg"><label>Форма обучения</label>
+        <select class="fi" id="cp-forma">
+          <option>очная с применением дистанционных образовательных технологий</option>
+          <option>очная</option><option>заочная</option><option>дистанционная</option>
+        </select></div>
+      <div class="fg"><label>Стоимость (руб.)</label>
+        <input class="fi" type="number" id="cp-cost" placeholder="38500"></div>
+      <div class="fg"><label>Стоимость прописью</label>
+        <input class="fi" id="cp-cost-words" placeholder="тридцать восемь тысяч пятьсот"></div>
+      <div class="fg"><label>Учебный год</label>
+        <input class="fi" id="cp-year" value="2025-2026"></div>
+      <div class="fg"><label>№ основного приказа о проведении</label>
+        <input class="fi" id="cp-main-ord" placeholder="913-о"></div>
+      <div class="fg"><label>Дата основного приказа</label>
+        <input class="fi" type="date" id="cp-main-ord-date"></div>
+      <div class="fg"><label>Вид документа об обучении</label>
+        <select class="fi" id="cp-vid">
+          <option>диплом о профессиональной переподготовке</option>
+          <option>удостоверение о повышении квалификации</option>
+          <option>свидетельство об обучении</option>
+        </select></div>
+      <div class="fg"><label>Дата сессии (начало)</label>
+        <input class="fi" type="date" id="cp-ses-start"></div>
+      <div class="fg"><label>Дата сессии (окончание)</label>
+        <input class="fi" type="date" id="cp-ses-end"></div>
+    </div>
+    <hr class="dv">
+    <div class="ct" style="margin-bottom:12px;">✍️ Подписанты и ответственные</div>
+    <div class="grid2">
+      <div class="fg"><label>Ректор / И.о. ректора (должность)</label>
+        <input class="fi" id="cp-rector-title" placeholder="Ректор" value="Ректор"></div>
+      <div class="fg"><label>Подпись ректора (инициалы)</label>
+        <input class="fi" id="cp-rector" placeholder="Р.Т. Бурганов"></div>
+      <div class="fg"><label>Подписант договоров (должность, род. пад.)</label>
+        <input class="fi" id="cp-sign-title" placeholder="первого проректора"></div>
+      <div class="fg"><label>Подписант договоров (ФИО, род. пад.)</label>
+        <input class="fi" id="cp-sign-name" placeholder="Шарапова Азата Рафиковича"></div>
+      <div class="fg"><label>Подписант договоров (инициалы для подписи)</label>
+        <input class="fi" id="cp-sign-init" placeholder="А.Р. Шарапов"></div>
+      <div class="fg"><label>№ и дата доверенности подписанта</label>
+        <input class="fi" id="cp-dov" placeholder="№ 01-03-20 от 09.01.2025 года"></div>
+      <div class="fg"><label>Директор ИДО (инициалы)</label>
+        <input class="fi" id="cp-dir" placeholder="Румянцева Э.Р."></div>
+      <div class="fg"><label>Проректор (инициалы)</label>
+        <input class="fi" id="cp-prorector" placeholder="Павлову А.В."></div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:10px;">
+      <button class="btn bp" onclick="csNext(1)">Далее → Слушатели</button>
+    </div>
+  </div>
+
+  <!-- ШАГ 2: СЛУШАТЕЛИ -->
+  <div id="cs-block-2" class="card" style="display:none;">
+    <div class="ct">👥 Список слушателей</div>
+    <div class="alert ai" style="margin-bottom:16px;">
+      Добавьте слушателей вручную или загрузите Excel. Для каждого слушателя будет создан отдельный договор на образовательные услуги.
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="btn bdk bsm" onclick="csAddStudent()">＋ Добавить слушателя</button>
+      <label class="btn bdk bsm" style="cursor:pointer;">
+        📊 Загрузить из Excel
+        <input type="file" id="cs-students-xlsx" accept=".xlsx,.xls" style="display:none" onchange="csLoadStudentsXls(event)">
+      </label>
+    </div>
+    <div id="cs-students-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="margin-top:18px;display:flex;gap:10px;">
+      <button class="btn bg2" onclick="csBack(2)">← Назад</button>
+      <button class="btn bp" onclick="csNext(2)">Далее → Специалисты</button>
+    </div>
+  </div>
+
+  <!-- ШАГ 3: СПЕЦИАЛИСТЫ (ГПХ) -->
+  <div id="cs-block-3" class="card" style="display:none;">
+    <div class="ct">👔 Привлечённые специалисты (договоры ГПХ)</div>
+    <div class="alert ai" style="margin-bottom:16px;">
+      Для каждого специалиста будет создан договор ГПХ и акт выполнения услуг.
+    </div>
+    <button class="btn bdk bsm" onclick="csAddSpec()" style="margin-bottom:14px;">＋ Добавить специалиста</button>
+    <div id="cs-specs-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="margin-top:18px;display:flex;gap:10px;">
+      <button class="btn bg2" onclick="csBack(3)">← Назад</button>
+      <button class="btn bp" onclick="csNext(3)">Далее → Выбор документов</button>
+    </div>
+  </div>
+
+  <!-- ШАГ 4: ВЫБОР ДОКУМЕНТОВ -->
+  <div id="cs-block-4" class="card" style="display:none;">
+    <div class="ct">📋 Выберите документы для генерации</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="cs-doc-checks"></div>
+    <hr class="dv">
+    <div class="ct" style="margin-bottom:10px;">🔢 Нумерация документов</div>
+    <div class="grid2">
+      <div class="fg"><label>Первый № приказа в пакете</label>
+        <input class="fi" type="number" id="cs-ord-start" placeholder="авто"></div>
+      <div class="fg"><label>Первый № договора (слушатели)</label>
+        <input class="fi" id="cs-contract-start" placeholder="КПКО-1001"></div>
+      <div class="fg"><label>Первый № договора ГПХ</label>
+        <input class="fi" type="number" id="cs-gph-start" placeholder="1"></div>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:10px;">
+      <button class="btn bg2" onclick="csBack(4)">← Назад</button>
+      <button class="btn bp" onclick="csNext(4)">Далее → Генерация</button>
+    </div>
+  </div>
+
+  <!-- ШАГ 5: ГЕНЕРАЦИЯ -->
+  <div id="cs-block-5" class="card" style="display:none;">
+    <div class="ct">🚀 Итоговый пакет документов</div>
+    <div id="cs-summary" style="margin-bottom:16px;font-size:13.5px;color:var(--mut);"></div>
+    <div id="cs-progress" style="display:none;">
+      <div style="font-size:13.5px;margin-bottom:6px;" id="cs-prog-txt">Генерация...</div>
+      <div class="prog-bar"><div class="prog-fill" id="cs-prog-fill" style="width:0%"></div></div>
+    </div>
+    <div id="cs-log" style="max-height:200px;overflow-y:auto;font-size:12px;font-family:monospace;background:#F7F9FC;border:1px solid var(--brd);border-radius:8px;padding:10px;display:none;margin-top:12px;color:var(--mut);"></div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <button class="btn bg2" onclick="csBack(5)">← Назад</button>
+      <button class="btn ba" id="cs-genbtn" onclick="csGenerate()">🚀 Создать все документы</button>
+      <span id="cs-done" style="display:none;color:var(--ok);font-weight:600;font-size:13.5px;">✅ ZIP скачан!</span>
+    </div>
+  </div>
+
+</section>
+
 </div><!-- /wrap -->
 
 <!-- MODAL: UPLOAD -->
@@ -384,6 +540,53 @@ const META = {
   'ДОЛЖНОСТЬ_ПОДП':{'label':'Должность подписанта','type':'text','ph':'Директор ИДО'},
   'ГОРОД':         {'label':'Город','type':'text','ph':'Казань'},
   'ГОД':           {'label':'Год','type':'text','ph':'2025'},
+  // ── ГПХ договор ──
+  'НОМЕР_ДОГОВОРА_ГПХ':   {'label':'Номер договора ГПХ','type':'text','ph':'24'},
+  'НОМЕР_ДОГОВОРА_ОБР':   {'label':'Номер договора с обучающимся','type':'text','ph':'КПКО-1013'},
+  'ДАТА_ДОГОВОРА':        {'label':'Дата договора','type':'date'},
+  'ФИО_ИСПОЛНИТЕЛЯ':      {'label':'ФИО исполнителя (ГПХ)','type':'text','ph':'Абзалов Наиль Ильясович','full':true},
+  'ФИО_ИСПОЛНИТЕЛЯ_ИО':   {'label':'Инициалы исполнителя (Н.И. Абзалов)','type':'text','ph':'Н.И. Абзалов'},
+  'РОЛЬ_ГПХ':             {'label':'Роль исполнителя по ГПХ','type':'text','ph':'члена итоговой аттестационной комиссии','full':true},
+  'ЧАСЫ_ГПХ':             {'label':'Часов по договору ГПХ','type':'number','ph':'4'},
+  'СУММА_ГПХ':            {'label':'Сумма по ГПХ (цифрами)','type':'number','ph':'4800'},
+  'СУММА_ГПХ_ПРОПИСЬ':    {'label':'Сумма по ГПХ (прописью)','type':'text','ph':'четыре тысячи восемьсот','full':true},
+  'ДАТА_УСЛУГИ':          {'label':'Дата оказания услуги','type':'date'},
+  'ДАТА_АКТА':            {'label':'Дата акта','type':'date'},
+  'НОМЕР_ПРИКАЗА_ОРГ':    {'label':'Номер приказа об организации','type':'text','ph':'914-о'},
+  'ДАТА_ПРИКАЗА_ОРГ':     {'label':'Дата приказа об организации','type':'date'},
+  'ДАТА_РОЖДЕНИЯ_ИСП':    {'label':'Дата рождения исполнителя','type':'text','ph':'09.04.1978'},
+  'АДРЕС_ИСПОЛНИТЕЛЯ':    {'label':'Адрес исполнителя','type':'text','ph':'г. Казань, ул. ..., кв...','full':true},
+  'ИНН_ИСПОЛНИТЕЛЯ':      {'label':'ИНН исполнителя','type':'text','ph':'165802728066'},
+  'СНИЛС_ИСПОЛНИТЕЛЯ':    {'label':'СНИЛС исполнителя','type':'text','ph':'067-382-654 94'},
+  'БАНК_ИСПОЛНИТЕЛЯ':     {'label':'Банк исполнителя','type':'text','ph':'ПАО Сбербанк'},
+  'БИК_ИСПОЛНИТЕЛЯ':      {'label':'БИК банка исполнителя','type':'text','ph':'049205603'},
+  'ИНН_БАНКА':            {'label':'ИНН банка','type':'text','ph':'7707083893'},
+  'КПП_БАНКА':            {'label':'КПП банка','type':'text','ph':'165502001'},
+  'КОРР_СЧЕТ':            {'label':'Корреспондентский счёт','type':'text','ph':'30101810600000000603'},
+  // ── Договор с обучающимся ──
+  'ДАТА_РОЖДЕНИЯ':        {'label':'Дата рождения слушателя','type':'text','ph':'03.11.1972'},
+  'ПАСПОРТ_СЕРИЯ':        {'label':'Серия паспорта','type':'text','ph':'9224'},
+  'ПАСПОРТ_НОМЕР':        {'label':'Номер паспорта','type':'text','ph':'667894'},
+  'ПАСПОРТ_КЕМ':          {'label':'Кем выдан паспорт','type':'text','ph':'УФМС России по РТ','full':true},
+  'ПАСПОРТ_ДАТА':         {'label':'Дата выдачи паспорта','type':'text','ph':'11.11.2017'},
+  'ПАСПОРТ_КОД':          {'label':'Код подразделения','type':'text','ph':'160-003'},
+  'СНИЛС':                {'label':'СНИЛС слушателя','type':'text','ph':'057-291-203-58'},
+  'ИНН':                  {'label':'ИНН слушателя','type':'text','ph':'161400020205'},
+  'ФИО_ИНИЦИАЛЫ':         {'label':'ФИО с инициалами (Г.З. Булатова)','type':'text','ph':'Г.З. Слушателев'},
+  'СТОИМОСТЬ_ПРОПИСЬ':    {'label':'Стоимость прописью','type':'text','ph':'тридцать восемь тысяч пятьсот','full':true},
+  // ── Приказы ──
+  'НОМЕР_ПРИКАЗА_ПРОВЕДЕНИЯ':{'label':'Номер приказа о проведении','type':'text','ph':'913-о'},
+  'ДАТА_ПРИКАЗА_ПРОВЕДЕНИЯ': {'label':'Дата приказа о проведении','type':'date'},
+  // ── ИАК ──
+  'ПРЕДСЕДАТЕЛЬ_ИАК':     {'label':'Председатель ИАК','type':'text','ph':'Фролова Е.В., должность...','full':true},
+  'ЗАМ_ПРЕДСЕДАТЕЛЯ_ИАК': {'label':'Зам. председателя ИАК','type':'text','ph':'Румянцева Э.Р., д.б.н...','full':true},
+  'ЧЛЕН_ИАК_1':           {'label':'Член ИАК 1','type':'text','ph':'ФИО, учёная степень, должность','full':true},
+  'ЧЛЕН_ИАК_2':           {'label':'Член ИАК 2','type':'text','ph':'ФИО, учёная степень, должность','full':true},
+  'СЕКРЕТАРЬ_ИАК':        {'label':'Секретарь ИАК','type':'text','ph':'Насыров Д.Р., ведущий специалист ИДО','full':true},
+  // ── Справка-вызов ──
+  'СЕССИЯ_НАЧАЛО':        {'label':'Начало сессии','type':'date'},
+  'СЕССИЯ_КОНЕЦ':         {'label':'Конец сессии','type':'date'},
+  'ФИО_ПОЛУЧАТЕЛЯ':       {'label':'ФИО получателя (служебки)','type':'text','ph':'Наталья Вадимовна'},
 };
 const TBADGE={'Приказ о зачислении':'bb','Приказ об отчислении':'bo','Служебная записка':'bv','Договор с обучающимся':'bgg','Расписание':'bss','Программа курса':'bgg','Справка':'br','Другой':'bss'};
 const SQL = `-- ДокГен ИДО: создание таблиц
@@ -592,6 +795,7 @@ function goPage(name, btn) {
   if (name==='journal') renderJournal();
   if (name==='settings') initSettings();
   if (name==='tmpl') renderTmpls();
+  if (name==='course') initCourse();
 }
 
 // ═══════════════════════════════════════════════
@@ -1273,6 +1477,441 @@ function makeFilename(type,fio){
 }
 function ab2b64(buf){let b='';const u=new Uint8Array(buf);for(let i=0;i<u.length;i++)b+=String.fromCharCode(u[i]);return btoa(b);}
 function b642ab(b64){const b=atob(b64),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer;}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ПАКЕТ: КУРС — полная генерация всех документов по одному курсу
+// ═══════════════════════════════════════════════════════════════
+
+let csStudents = [];  // [{fio, org, kontract, stoimost, stoimost_words}]
+let csSpecs    = [];  // [{fio, rol, chasy, summa, summa_words, pasport, snils, adres, inn, bank, schet, initials, data_rozhd}]
+let csStep     = 1;
+
+// Типы документов: { id, label, perStudent, perSpec, groupDoc }
+const CS_DOC_TYPES = [
+  {id:'prikazProv',    label:'Приказ о проведении курсов',          group:true},
+  {id:'prikazOrg',     label:'Приказ об организации (смета)',        group:true},
+  {id:'prikazIAK',     label:'Приказ о создании ИАК',               group:true},
+  {id:'prikazTemy',    label:'Приказ об утверждении тем ИАР',        group:true},
+  {id:'prikazDopusk',  label:'Приказ о допуске к ИА',               group:true},
+  {id:'prikazOtchisl', label:'Приказ об отчислении (финал)',         group:true},
+  {id:'dogovorSl',     label:'Договор слушателя (образовательный)',  student:true},
+  {id:'spravkaVyzov',  label:'Справка-вызов',                        student:true},
+  {id:'otchislZayav',  label:'Отчисление по заявлению',              student:true},
+  {id:'dogovorGPH',    label:'Договор ГПХ (специалист)',             spec:true},
+  {id:'aktGPH',        label:'Акт выполнения услуг (специалист)',    spec:true},
+];
+
+function initCourse() {
+  csStep=1; csStudents=[]; csSpecs=[];
+  showCsStep(1);
+  // Fill default dates
+  const today = new Date().toISOString().split('T')[0];
+  if (!document.getElementById('cp-start').value) document.getElementById('cp-start').value = today;
+  if (!document.getElementById('cp-main-ord-date').value) document.getElementById('cp-main-ord-date').value = today;
+  // Fill order number from settings
+  if (settings.order_num) document.getElementById('cs-ord-start').placeholder = settings.order_num;
+  // Render doc checkboxes
+  renderCsDocChecks();
+}
+
+function showCsStep(n) {
+  csStep = n;
+  [1,2,3,4,5].forEach(i => {
+    const b = document.getElementById('cs-block-'+i);
+    if(b) b.style.display = (i===n)?'block':'none';
+    const s = document.getElementById('cs-'+i);
+    if(s) s.className = 'step' + (i<n?' done':i===n?' cur':'');
+  });
+}
+
+function csNext(from) {
+  if(from===1) {
+    if (!document.getElementById('cp-prog').value.trim()) {alert('Введите название программы');return;}
+    showCsStep(2); renderCsStudents();
+  } else if(from===2) {
+    showCsStep(3); renderCsSpecs();
+  } else if(from===3) {
+    showCsStep(4);
+  } else if(from===4) {
+    buildCsSummary(); showCsStep(5);
+  }
+}
+function csBack(from) { showCsStep(from-1); }
+
+// ── Студенты ─────────────────────────────────
+function csAddStudent(data={}) {
+  csStudents.push({
+    fio: data.fio||'', org: data.org||'',
+    nomDog: data.nomDog||'', stoimost: data.stoimost||'',
+    stoimostWords: data.stoimostWords||'', email: data.email||''
+  });
+  renderCsStudents();
+}
+
+function csRemoveStudent(i) { csStudents.splice(i,1); renderCsStudents(); }
+
+function renderCsStudents() {
+  const el = document.getElementById('cs-students-list');
+  if (!csStudents.length) {
+    el.innerHTML = '<div style="color:var(--mut);font-size:13px;padding:12px 0;">Слушателей нет — добавьте вручную или загрузите Excel</div>';
+    return;
+  }
+  el.innerHTML = csStudents.map((s,i) => `
+    <div style="background:#F7F9FC;border:1px solid var(--brd);border-radius:8px;padding:12px 14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-weight:600;font-size:13px;color:var(--p);">👤 ${i+1}.</span>
+        <input class="fi" style="flex:1;" placeholder="ФИО полностью" value="${es(s.fio)}"
+          oninput="csStudents[${i}].fio=this.value">
+        <button class="btn bdng bsm" onclick="csRemoveStudent(${i})">✕</button>
+      </div>
+      <div class="grid2" style="gap:8px;">
+        <div class="fg" style="margin-bottom:0;"><label>Организация</label>
+          <input class="fi" placeholder="Место работы" value="${es(s.org)}" oninput="csStudents[${i}].org=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Email</label>
+          <input class="fi" placeholder="email@example.com" value="${es(s.email||'')}" oninput="csStudents[${i}].email=this.value"></div>
+      </div>
+    </div>`).join('');
+}
+
+function csLoadStudentsXls(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const wb = XLSX.read(ev.target.result, {type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, {raw:false});
+    csStudents = [];
+    rows.forEach(row => {
+      const fio = row['ФИО']||row['фио']||row['Фио']||Object.values(row)[0]||'';
+      if(fio.trim()) csStudents.push({
+        fio: fio.trim(), org: row['ОРГАНИЗАЦИЯ']||row['Организация']||'',
+        nomDog:'', stoimost:'', stoimostWords:'', email: row['EMAIL']||row['email']||row['Email']||''
+      });
+    });
+    renderCsStudents();
+    e.target.value = '';
+  };
+  r.readAsArrayBuffer(file);
+}
+
+// ── Специалисты ───────────────────────────────
+function csAddSpec() {
+  csSpecs.push({fio:'', rol:'члена итоговой аттестационной комиссии',
+    chasy:'4', summa:'', summaWords:'',
+    pasport:'', snils:'', adres:'', inn:'', bank:'', schet:'', initials:'', dataRozhd:''});
+  renderCsSpecs();
+}
+
+function csRemoveSpec(i) { csSpecs.splice(i,1); renderCsSpecs(); }
+
+function renderCsSpecs() {
+  const el = document.getElementById('cs-specs-list');
+  if (!csSpecs.length) {
+    el.innerHTML = '<div style="color:var(--mut);font-size:13px;padding:12px 0;">Специалистов нет — можно пропустить этот шаг</div>';
+    return;
+  }
+  el.innerHTML = csSpecs.map((s,i) => `
+    <div style="background:#F7F9FC;border:1px solid var(--brd);border-radius:8px;padding:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="font-weight:600;font-size:13px;color:var(--acc);">👔 ${i+1}.</span>
+        <input class="fi" style="flex:1;" placeholder="ФИО специалиста полностью" value="${es(s.fio)}"
+          oninput="csSpecs[${i}].fio=this.value">
+        <button class="btn bdng bsm" onclick="csRemoveSpec(${i})">✕</button>
+      </div>
+      <div class="grid2" style="gap:8px;">
+        <div class="fg" style="margin-bottom:0;"><label>Роль / услуга</label>
+          <input class="fi" value="${es(s.rol)}" oninput="csSpecs[${i}].rol=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Часов</label>
+          <input class="fi" type="number" value="${es(s.chasy)}" oninput="csSpecs[${i}].chasy=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Сумма (руб.)</label>
+          <input class="fi" placeholder="4800" value="${es(s.summa)}" oninput="csSpecs[${i}].summa=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Сумма прописью</label>
+          <input class="fi" placeholder="четыре тысячи восемьсот" value="${es(s.summaWords)}" oninput="csSpecs[${i}].summaWords=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Дата рождения</label>
+          <input class="fi" placeholder="01.01.1980" value="${es(s.dataRozhd)}" oninput="csSpecs[${i}].dataRozhd=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Инициалы (для подписи)</label>
+          <input class="fi" placeholder="Н.И. Иванов" value="${es(s.initials)}" oninput="csSpecs[${i}].initials=this.value"></div>
+        <div class="fg colfull" style="margin-bottom:0;"><label>Паспортные данные</label>
+          <input class="fi" placeholder="серия ХХХХ № ХХХХХХ выдан..." value="${es(s.pasport)}" oninput="csSpecs[${i}].pasport=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>СНИЛС</label>
+          <input class="fi" placeholder="000-000-000 00" value="${es(s.snils)}" oninput="csSpecs[${i}].snils=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>ИНН</label>
+          <input class="fi" placeholder="000000000000" value="${es(s.inn)}" oninput="csSpecs[${i}].inn=this.value"></div>
+        <div class="fg colfull" style="margin-bottom:0;"><label>Адрес</label>
+          <input class="fi" placeholder="г. Казань, ул. ..." value="${es(s.adres)}" oninput="csSpecs[${i}].adres=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Банк</label>
+          <input class="fi" placeholder="ПАО Сбербанк" value="${es(s.bank)}" oninput="csSpecs[${i}].bank=this.value"></div>
+        <div class="fg" style="margin-bottom:0;"><label>Номер счёта</label>
+          <input class="fi" placeholder="40817810ХXXXXXXXXXX" value="${es(s.schet)}" oninput="csSpecs[${i}].schet=this.value"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Чекбоксы документов ───────────────────────
+let csSelectedDocs = new Set(CS_DOC_TYPES.map(d=>d.id));
+
+function renderCsDocChecks() {
+  const el = document.getElementById('cs-doc-checks');
+  if (!el) return;
+  el.innerHTML = CS_DOC_TYPES.map(d => {
+    const badge = d.group ? '<span class="b bb" style="font-size:10px;">Общий</span>'
+                : d.student ? '<span class="b bgg" style="font-size:10px;">На слушателя</span>'
+                : '<span class="b bv" style="font-size:10px;">На специалиста</span>';
+    return `<label class="chk-row ${csSelectedDocs.has(d.id)?'checked':''}" onclick="csDToggle('${d.id}',this)">
+      <input type="checkbox" ${csSelectedDocs.has(d.id)?'checked':''} style="pointer-events:none;">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;">${d.label}</div></div>
+      ${badge}
+    </label>`;
+  }).join('');
+}
+
+function csDToggle(id, row) {
+  const chk = row.querySelector('input');
+  chk.checked = !chk.checked;
+  if (chk.checked) { csSelectedDocs.add(id); row.classList.add('checked'); }
+  else { csSelectedDocs.delete(id); row.classList.remove('checked'); }
+}
+
+// ── Сводка перед генерацией ───────────────────
+function buildCsSummary() {
+  const nSl = csStudents.filter(s=>s.fio.trim()).length;
+  const nSp = csSpecs.filter(s=>s.fio.trim()).length;
+  const nGr = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.group)).length;
+  const docsPerSl = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.student)).length;
+  const docsPerSp = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.spec)).length;
+  const total = nGr + nSl*docsPerSl + nSp*docsPerSp;
+  document.getElementById('cs-summary').innerHTML =
+    `Слушателей: <b>${nSl}</b> · Специалистов: <b>${nSp}</b> · ` +
+    `Групповых документов: <b>${nGr}</b> · ` +
+    `На слушателя: <b>${docsPerSl}×${nSl}=${docsPerSl*nSl}</b> · ` +
+    `На специалиста: <b>${docsPerSp}×${nSp}=${docsPerSp*nSp}</b> · ` +
+    `<b style="color:var(--p);">Итого: ${total} файлов</b>`;
+}
+
+// ── Получение данных курса ────────────────────
+function getCourseData() {
+  const fmtDate = id => {
+    const v = document.getElementById(id)?.value;
+    if (!v) return '';
+    const d = new Date(v+'T00:00:00');
+    return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'}).replace(' г.','') + ' г.';
+  };
+  return {
+    ПРОГРАММА:    document.getElementById('cp-prog').value.trim(),
+    ДАТА_НАЧАЛА:  fmtDate('cp-start'),
+    ДАТА_ОКОНЧАНИЯ: fmtDate('cp-end'),
+    ЧАСЫ:         document.getElementById('cp-hours').value,
+    ФОРМА:        document.getElementById('cp-forma').value,
+    СТОИМОСТЬ:    document.getElementById('cp-cost').value,
+    СТОИМОСТЬ_ПРОПИСЬ: document.getElementById('cp-cost-words').value,
+    УЧ_ГОД:       document.getElementById('cp-year').value,
+    НОМ_ОСНОГО_ПРИКАЗА: document.getElementById('cp-main-ord').value,
+    ДАТА:         fmtDate('cp-main-ord-date'),
+    ВИД:          document.getElementById('cp-vid').value,
+    ДАТА_СЕССИИ_НАЧ: fmtDate('cp-ses-start'),
+    ДАТА_СЕССИИ_КОН: fmtDate('cp-ses-end'),
+    ДОЛЖНОСТЬ_ПОДП: document.getElementById('cp-rector-title').value,
+    ПОДПИСАНТ:    document.getElementById('cp-rector').value,
+    ДОЛЖНОСТЬ_ПОДП_ДАТ: document.getElementById('cp-sign-title').value,
+    ФИО_ПОДП_РОД: document.getElementById('cp-sign-name').value,
+    ИНИЦИАЛЫ_ПОДП: document.getElementById('cp-sign-init').value,
+    НОМ_ДОВЕРЕН:  document.getElementById('cp-dov').value,
+    ДИРЕКТОР_ИДО: document.getElementById('cp-dir').value,
+    ПРОРЕКТОР:    document.getElementById('cp-prorector').value,
+  };
+}
+
+// Поиск шаблона по ключевым словам в названии
+function findTmpl(keywords) {
+  const kw = keywords.map(k=>k.toLowerCase());
+  return T.find(t => kw.some(k => t.name.toLowerCase().includes(k)));
+}
+
+// ── Основная генерация ────────────────────────
+async function csGenerate() {
+  if(!requireSb()) return;
+  const btn = document.getElementById('cs-genbtn');
+  btn.disabled = true;
+  document.getElementById('cs-progress').style.display = 'block';
+  document.getElementById('cs-log').style.display = 'block';
+  document.getElementById('cs-done').style.display = 'none';
+
+  const log = (msg) => {
+    const el = document.getElementById('cs-log');
+    el.innerHTML += msg + '<br>';
+    el.scrollTop = el.scrollHeight;
+  };
+  const setProgress = (pct, txt) => {
+    document.getElementById('cs-prog-fill').style.width = pct+'%';
+    document.getElementById('cs-prog-txt').textContent = txt;
+  };
+
+  const zip = new JSZip();
+  const course = getCourseData();
+  const today = new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+  let ordNum = parseInt(document.getElementById('cs-ord-start').value) || parseInt(settings.order_num) || 1;
+  let contractNum = document.getElementById('cs-contract-start').value.trim() || 'КПКО-'+ordNum;
+  let gphNum = parseInt(document.getElementById('cs-gph-start').value) || 1;
+  let totalDone = 0;
+  const students = csStudents.filter(s=>s.fio.trim());
+  const specs = csSpecs.filter(s=>s.fio.trim());
+  const doGrp = id => csSelectedDocs.has(id);
+
+  // Считаем общее количество файлов
+  const nGr = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.group)).length;
+  const docsPerSl = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.student)).length;
+  const docsPerSp = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.spec)).length;
+  const totalFiles = nGr + students.length*docsPerSl + specs.length*docsPerSp;
+
+  const genFile = async (tmpl, data, filename, folder) => {
+    if (!tmpl) { log(`⚠️ Шаблон не найден: ${filename}`); return; }
+    try {
+      const ab = await fetchTmplFile(tmpl);
+      const blob = await genDocx({...tmpl, _ab: ab}, data);
+      if (blob) {
+        const arr = await blob.arrayBuffer();
+        zip.file(folder ? `${folder}/${filename}` : filename, arr);
+        log(`✅ ${filename}`);
+      }
+    } catch(e) { log(`❌ ${filename}: ${e.message}`); }
+    totalDone++;
+    setProgress(Math.round(totalDone/totalFiles*100), `${totalDone} из ${totalFiles} файлов...`);
+    await sleep(5);
+  };
+
+  // ── ГРУППОВЫЕ ДОКУМЕНТЫ ───────────────────
+  const courseFolder = '00_Общие приказы';
+
+  if (doGrp('prikazProv')) {
+    const t = findTmpl(['проведени','пп афк','о проведении']);
+    const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
+    // Добавляем список слушателей как нумерованный список
+    await genFile(t, data, `Приказ о проведении № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+  if (doGrp('prikazOrg')) {
+    const t = findTmpl(['организаци','смет','кпп афк']);
+    await genFile(t, {...course, НОМЕР_ПРИКАЗА: String(ordNum)}, `Приказ об организации № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+  if (doGrp('prikazIAK')) {
+    const t = findTmpl(['иак','аттестационн','комисси']);
+    await genFile(t, {...course, НОМЕР_ПРИКАЗА: String(ordNum)}, `Приказ о создании ИАК № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+  if (doGrp('prikazTemy')) {
+    const t = findTmpl(['тем','иар','аттестационн раб']);
+    // Добавляем ФИО слушателей как ФИО_1..ФИО_N
+    const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
+    students.forEach((s,i) => { data[`ФИО_${i+1}`] = s.fio; });
+    await genFile(t, data, `Приказ об утверждении тем № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+  if (doGrp('prikazDopusk')) {
+    const t = findTmpl(['допуск','итогов','аттест']);
+    const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
+    students.forEach((s,i) => { data[`ФИО_${i+1}`] = s.fio; });
+    await genFile(t, data, `Приказ о допуске к ИА № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+  if (doGrp('prikazOtchisl')) {
+    const t = findTmpl(['отчислени']);
+    const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
+    students.forEach((s,i) => { data[`ФИО_${i+1}`] = s.fio; });
+    await genFile(t, data, `Приказ об отчислении № ${ordNum}.docx`, courseFolder);
+    ordNum++;
+  }
+
+  // ── НА КАЖДОГО СЛУШАТЕЛЯ ─────────────────
+  for (const st of students) {
+    const folder = `01_Слушатели/${st.fio.split(' ')[0]}_${st.fio.split(' ')[1]||''}`.trim();
+    const stData = {
+      ...course,
+      ФИО: st.fio,
+      ОРГАНИЗАЦИЯ: st.org||'',
+      НОМЕР_ДОГОВОРА: contractNum,
+      EMAIL: st.email||'',
+    };
+
+    if (csSelectedDocs.has('dogovorSl')) {
+      const t = findTmpl(['договор', 'образователь', 'слушател', 'кпко', 'булатов']);
+      await genFile(t, stData, `Договор ${st.fio.split(' ')[0]}.docx`, folder);
+      // Increment contract number
+      const m = contractNum.match(/^([А-Яа-яA-Za-z\-]*)(\d+)$/);
+      if (m) contractNum = m[1] + (parseInt(m[2])+1);
+    }
+
+    if (csSelectedDocs.has('spravkaVyzov')) {
+      const t = findTmpl(['справка','вызов']);
+      await genFile(t, stData, `Справка-вызов ${st.fio.split(' ')[0]}.docx`, folder);
+    }
+
+    if (csSelectedDocs.has('otchislZayav')) {
+      const t = findTmpl(['отчислени агиев','заявлени','по собственн']);
+      await genFile(t, stData, `Отчисление (заявление) ${st.fio.split(' ')[0]}.docx`, folder);
+    }
+  }
+
+  // ── НА КАЖДОГО СПЕЦИАЛИСТА ───────────────
+  for (const sp of specs) {
+    const folder = `02_Специалисты/${sp.fio.split(' ')[0]}_${sp.fio.split(' ')[1]||''}`.trim();
+    const spData = {
+      ...course,
+      ФИО_СПЕЦИАЛИСТ: sp.fio,
+      РОЛЬ_СПЕЦИАЛИСТ: sp.rol,
+      ЧАСЫ_ГПХ: sp.chasy,
+      СТОИМОСТЬ_ГПХ: sp.summa,
+      СТОИМОСТЬ_ПРОПИСЬ_ГПХ: sp.summaWords,
+      ПАСПОРТ_СПЕЦИАЛИСТ: sp.pasport,
+      СНИЛС_СПЕЦИАЛИСТ: sp.snils,
+      ИНН_СПЕЦИАЛИСТ: sp.inn,
+      АДРЕС_СПЕЦИАЛИСТ: sp.adres,
+      БАНК_СПЕЦИАЛИСТ: sp.bank,
+      СЧЕТ_СПЕЦИАЛИСТ: sp.schet,
+      ИНИЦИАЛЫ_СПЕЦИАЛИСТ: sp.initials,
+      ДАТА_РОЖДЕНИЯ_СПЕЦ: sp.dataRozhd,
+      НОМЕР_ДОГОВОРА_ГПХ: String(gphNum),
+      ДАТА_УСЛУГИ: course.ДАТА||today,
+    };
+
+    if (csSelectedDocs.has('dogovorGPH')) {
+      const t = findTmpl(['договор абзал','гпх','возмезд','исполнитель']);
+      await genFile(t, spData, `Договор ГПХ ${sp.fio.split(' ')[0]}.docx`, folder);
+    }
+
+    if (csSelectedDocs.has('aktGPH')) {
+      const t = findTmpl(['акт']);
+      await genFile(t, spData, `Акт ${sp.fio.split(' ')[0]}.docx`, folder);
+    }
+    gphNum++;
+  }
+
+  // ── СОХРАНЯЕМ В ЖУРНАЛ ──────────────────
+  if (sb) {
+    await sb.from('dg_journal').insert({
+      tmpl_name: 'Пакет: Курс',
+      type: 'Пакет документов',
+      data: {программа: course.ПРОГРАММА, слушателей: students.length, специалистов: specs.length},
+      file: `Курс_${course.ПРОГРАММА.slice(0,30)}_${today}.zip`,
+      order_num: '',
+      mode: 'course',
+      batch_id: 'course-'+Date.now()
+    });
+    // Update order counter
+    await sb.from('dg_settings').update({order_num: ordNum}).eq('id',1);
+    settings.order_num = ordNum;
+  }
+
+  setProgress(100, `✅ Готово! Сформировано ${totalDone} файлов`);
+  const zipBlob = await zip.generateAsync({type:'blob'});
+  const zipName = `Курс_${(course.ПРОГРАММА||'').slice(0,25).replace(/[\s]+/g,'_')}_${today.replace(/[.]/g,'-')}.zip`;
+  saveAs(zipBlob, zipName);
+
+  btn.disabled = false;
+  document.getElementById('cs-done').style.display = 'inline';
+  log('✅ ZIP скачан: ' + zipName);
+}
 
 // Close modal on outside click
 document.querySelectorAll('.ov').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('op');}));
