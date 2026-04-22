@@ -382,6 +382,26 @@ hr.dv{border:none;border-top:1px solid var(--brd);margin:18px 0;}
         <input class="fi" id="cp-dir" placeholder="Румянцева Э.Р."></div>
       <div class="fg"><label>Проректор (инициалы)</label>
         <input class="fi" id="cp-prorector" placeholder="Павлову А.В."></div>
+      <div class="fg"><label>Должность подписанта (родительный падеж)</label>
+        <input class="fi" id="cp-sign-title-rod" placeholder="начальника Управления правового обеспечения и кадровой работы"></div>
+      <div class="fg"><label>Номер доверенности подписанта</label>
+        <input class="fi" id="cp-dov-num" placeholder="№ 01-03-20 от 09.01.2025 года"></div>
+      <div class="fg"><label>Главный бухгалтер (инициалы)</label>
+        <input class="fi" id="cp-buh" placeholder="Мухамедкаримовой Г.К."></div>
+    </div>
+    <hr class="dv">
+    <div class="ct" style="margin-bottom:12px;">🏛 Состав ИАК (итоговой аттестационной комиссии)</div>
+    <div class="grid2">
+      <div class="fg colfull"><label>Председатель ИАК</label>
+        <input class="fi" id="cp-chair-iak" placeholder="Фролова Елена Вилевна, начальник отдела физического воспитания... Министерства спорта РТ"></div>
+      <div class="fg colfull"><label>Заместитель председателя ИАК</label>
+        <input class="fi" id="cp-zam-iak" placeholder="Румянцева Эльвира Римовна, д.б.н., профессор..."></div>
+      <div class="fg colfull"><label>Член ИАК 1</label>
+        <input class="fi" id="cp-iak1" placeholder="Швец Регина Ринатовна, к.п.н., доцент..."></div>
+      <div class="fg colfull"><label>Член ИАК 2</label>
+        <input class="fi" id="cp-iak2" placeholder="Абзалов Наиль Ильясович, д.б.н., доцент..."></div>
+      <div class="fg colfull"><label>Секретарь ИАК</label>
+        <input class="fi" id="cp-sec-iak" placeholder="Насыров Дмитрий Рустамович, ведущий специалист ИДО..."></div>
     </div>
     <div style="margin-top:18px;display:flex;gap:10px;">
       <button class="btn bp" onclick="csNext(1)">Далее → Слушатели</button>
@@ -1468,6 +1488,10 @@ function fixSplits(xml){
   // Merge placeholders that Word split across XML runs
   return xml.replace(/\{\{((?:[^}<]|<[^>]+>)*?)\}\}/g,m=>m.replace(/<[^>]+>/g,''));
 }
+function removeEmptyTableRows(xml){
+  // Удалить строки таблицы <w:tr> которые содержат незамененные метки {{...}}
+  return xml.replace(/<w:tr[ >](?:(?!<w:tr[ >]|<\/w:tr>).)*?\{\{[^}]+\}\}(?:(?!<\/w:tr>).)*?<\/w:tr>/gs, '');
+}
 function escX(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function es(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function makeFilename(type,fio){
@@ -1717,15 +1741,36 @@ function getCourseData() {
     ФИО_ПОДП_РОД: document.getElementById('cp-sign-name').value,
     ИНИЦИАЛЫ_ПОДП: document.getElementById('cp-sign-init').value,
     НОМ_ДОВЕРЕН:  document.getElementById('cp-dov').value,
-    ДИРЕКТОР_ИДО: document.getElementById('cp-dir').value,
-    ПРОРЕКТОР:    document.getElementById('cp-prorector').value,
+    ДИРЕКТОР_ИДО:       document.getElementById('cp-dir').value,
+    ПРОРЕКТОР:          document.getElementById('cp-prorector').value,
+    // Подписант договоров (родительный падеж)
+    ДОЛЖНОСТЬ_ПОДП_РОД: document.getElementById('cp-sign-title-rod')?.value || '',
+    НОМ_ДОВЕРЕН:        document.getElementById('cp-dov-num')?.value || '',
+    ДАТА_ДОВЕРЕН:       document.getElementById('cp-dov-num')?.value || '', // same field
+    ГЛАВ_БУХ:           document.getElementById('cp-buh')?.value || '',
+    // ИАК
+    ПРЕДСЕДАТЕЛЬ_ИАК:     document.getElementById('cp-chair-iak')?.value || '',
+    ЗАМ_ПРЕДСЕДАТЕЛЯ_ИАК: document.getElementById('cp-zam-iak')?.value || '',
+    ЧЛЕН_ИАК_1:           document.getElementById('cp-iak1')?.value || '',
+    ЧЛЕН_ИАК_2:           document.getElementById('cp-iak2')?.value || '',
+    СЕКРЕТАРЬ_ИАК:        document.getElementById('cp-sec-iak')?.value || '',
   };
 }
 
 // Поиск шаблона по ключевым словам в названии
+// Сначала ищет шаблон где ВСТРЕЧАЮТСЯ ВСЕ слова, затем хотя бы одно
 function findTmpl(keywords) {
   const kw = keywords.map(k=>k.toLowerCase());
-  return T.find(t => kw.some(k => t.name.toLowerCase().includes(k)));
+  const name = t => t.name.toLowerCase();
+  // 1. Все слова совпадают
+  const allMatch = T.find(t => kw.every(k => name(t).includes(k)));
+  if (allMatch) return allMatch;
+  // 2. Хотя бы одно слово (первое имеет приоритет)
+  for (const k of kw) {
+    const m = T.find(t => name(t).includes(k));
+    if (m) return m;
+  }
+  return null;
 }
 
 // ── Основная генерация ────────────────────────
@@ -1764,11 +1809,21 @@ async function csGenerate() {
   const docsPerSp = [...csSelectedDocs].filter(id=>CS_DOC_TYPES.find(d=>d.id===id&&d.spec)).length;
   const totalFiles = nGr + students.length*docsPerSl + specs.length*docsPerSp;
 
+  // Авто-очищаем все незаполненные {{ФИО_X}} и другие пустые метки
+  const cleanData = (data) => {
+    const out = {...data};
+    // Заполняем ФИО_1..ФИО_20 пустой строкой если не заданы
+    for (let i=1; i<=20; i++) {
+      if (!((`ФИО_${i}`) in out)) out[`ФИО_${i}`] = '';
+    }
+    return out;
+  };
+
   const genFile = async (tmpl, data, filename, folder) => {
     if (!tmpl) { log(`⚠️ Шаблон не найден: ${filename}`); return; }
     try {
       const ab = await fetchTmplFile(tmpl);
-      const blob = await genDocx({...tmpl, _ab: ab}, data);
+      const blob = await genDocx({...tmpl, _ab: ab}, cleanData(data));
       if (blob) {
         const arr = await blob.arrayBuffer();
         zip.file(folder ? `${folder}/${filename}` : filename, arr);
@@ -1784,24 +1839,24 @@ async function csGenerate() {
   const courseFolder = '00_Общие приказы';
 
   if (doGrp('prikazProv')) {
-    const t = findTmpl(['проведени','пп афк','о проведении']);
+    const t = findTmpl(['пп афк','о проведении курсов','проведени']) || findTmpl(['проведени']);
     const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
     // Добавляем список слушателей как нумерованный список
     await genFile(t, data, `Приказ о проведении № ${ordNum}.docx`, courseFolder);
     ordNum++;
   }
   if (doGrp('prikazOrg')) {
-    const t = findTmpl(['организаци','смет','кпп афк']);
+    const t = findTmpl(['организаци проведени','кпп афк','об организации']) || findTmpl(['организаци']);
     await genFile(t, {...course, НОМЕР_ПРИКАЗА: String(ordNum)}, `Приказ об организации № ${ordNum}.docx`, courseFolder);
     ordNum++;
   }
   if (doGrp('prikazIAK')) {
-    const t = findTmpl(['иак','аттестационн','комисси']);
+    const t = findTmpl(['создани иак','создани итогов','иак']) || findTmpl(['аттестационн комисси']);
     await genFile(t, {...course, НОМЕР_ПРИКАЗА: String(ordNum)}, `Приказ о создании ИАК № ${ordNum}.docx`, courseFolder);
     ordNum++;
   }
   if (doGrp('prikazTemy')) {
-    const t = findTmpl(['тем','иар','аттестационн раб']);
+    const t = findTmpl(['утвержден тем','тем иар','об утверждении тем']) || findTmpl(['иар']);
     // Добавляем ФИО слушателей как ФИО_1..ФИО_N
     const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
     students.forEach((s,i) => { data[`ФИО_${i+1}`] = s.fio; });
@@ -1809,7 +1864,7 @@ async function csGenerate() {
     ordNum++;
   }
   if (doGrp('prikazDopusk')) {
-    const t = findTmpl(['допуск','итогов','аттест']);
+    const t = findTmpl(['допуск слушател','о допуске','допуск к иа']) || findTmpl(['допуск']);
     const data = {...course, НОМЕР_ПРИКАЗА: String(ordNum)};
     students.forEach((s,i) => { data[`ФИО_${i+1}`] = s.fio; });
     await genFile(t, data, `Приказ о допуске к ИА № ${ordNum}.docx`, courseFolder);
@@ -1829,13 +1884,17 @@ async function csGenerate() {
     const stData = {
       ...course,
       ФИО: st.fio,
+      ФИО_РОД: st.fio, // аппроксимация, можно заполнить вручную
       ОРГАНИЗАЦИЯ: st.org||'',
       НОМЕР_ДОГОВОРА: contractNum,
       EMAIL: st.email||'',
+      // Поля для договора образовательных услуг
+      СТОИМОСТЬ: course.СТОИМОСТЬ,
+      СТОИМОСТЬ_ПРОПИСЬ: course.СТОИМОСТЬ_ПРОПИСЬ,
     };
 
     if (csSelectedDocs.has('dogovorSl')) {
-      const t = findTmpl(['договор', 'образователь', 'слушател', 'кпко', 'булатов']);
+      const t = findTmpl(['кпко','булатов','образовательн услуг']) || findTmpl(['образователь','слушател']);
       await genFile(t, stData, `Договор ${st.fio.split(' ')[0]}.docx`, folder);
       // Increment contract number
       const m = contractNum.match(/^([А-Яа-яA-Za-z\-]*)(\d+)$/);
@@ -1843,12 +1902,12 @@ async function csGenerate() {
     }
 
     if (csSelectedDocs.has('spravkaVyzov')) {
-      const t = findTmpl(['справка','вызов']);
+      const t = findTmpl(['справка-вызов','вызов']) || findTmpl(['справка']);
       await genFile(t, stData, `Справка-вызов ${st.fio.split(' ')[0]}.docx`, folder);
     }
 
     if (csSelectedDocs.has('otchislZayav')) {
-      const t = findTmpl(['отчислени агиев','заявлени','по собственн']);
+      const t = findTmpl(['агиев','по заявлени','по собственн']) || findTmpl(['отчислени']);
       await genFile(t, stData, `Отчисление (заявление) ${st.fio.split(' ')[0]}.docx`, folder);
     }
   }
@@ -1876,12 +1935,12 @@ async function csGenerate() {
     };
 
     if (csSelectedDocs.has('dogovorGPH')) {
-      const t = findTmpl(['договор абзал','гпх','возмезд','исполнитель']);
+      const t = findTmpl(['абзал','гпх','возмезд оказани']) || findTmpl(['возмезд']);
       await genFile(t, spData, `Договор ГПХ ${sp.fio.split(' ')[0]}.docx`, folder);
     }
 
     if (csSelectedDocs.has('aktGPH')) {
-      const t = findTmpl(['акт']);
+      const t = findTmpl(['акт выполнени','акт о выполнени']) || findTmpl(['акт']);
       await genFile(t, spData, `Акт ${sp.fio.split(' ')[0]}.docx`, folder);
     }
     gphNum++;
